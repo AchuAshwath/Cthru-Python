@@ -16,21 +16,19 @@ The terminal prints:
 28
 ```
 
-In languages like C or Rust, an integer takes **4 bytes** (or 8 bytes for a 64-bit integer). Why does the number zero in Python consume **28 bytes** of RAM?
+In lower-level languages like C or Rust, an integer takes **4 bytes** (or 8 bytes for a 64-bit integer). Why does the number zero in Python consume **28 bytes** of RAM?
 
-This page breaks down how Python represents data in memory, structured into three progressive depths.
+Understanding where those 28 bytes go reveals the universal architectural foundation of Python: the **`PyObject`**.
 
 ---
 
-## Basics: Intuition & Observable Behavior
+## Why a Python Integer Consumes 28 Bytes
 
-### The Identity Badge Metaphor
+In lower-level systems, a number is just a raw sequence of bits stored in memory. The CPU has no idea whether those bits represent a signed integer, an ASCII character, or a memory address unless the compiler hardcodes it ahead of time.
 
-In lower-level languages, a number is just a raw sequence of bits stored in memory. The computer has no idea whether those bits represent a number, a character, or part of an image unless the compiler hardcodes it ahead of time.
+In Python, every piece of data carries its own identity badge:
 
-Python is different. In Python, **data carries its own identity badge**:
-
-```
+```text
 Raw C Integer (4 Bytes):
 ┌───────────────────────────┐
 │        Value: 42          │
@@ -46,43 +44,37 @@ Python Integer (28 Bytes):
 └───────────────────────────┴───────────────────────────┘
 ```
 
-Because every piece of data carries this metadata, Python can:
+Because every piece of data carries this structural metadata, Python can:
 
-- Automatically manage memory (cleaning up an object when nothing points to it).
-- Support dynamic typing (knowing at runtime whether an object is a number, string, or list).
-- Support infinite-precision numbers (Python integers never overflow 64-bit limits).
+- **Manage memory automatically**: Objects clean themselves up when nothing references them.
+- **Support dynamic typing**: The runtime can verify at any instant whether an object is a number, a string, or a list.
+- **Support arbitrary precision**: Python integers never overflow 64-bit limits—they dynamically allocate more 30-bit digit chunks as the number grows.
 
-### Try This in Your Terminal
-
-Check the memory overhead of different basic types in your Python REPL:
+This overhead applies to all Python types:
 
 ```python
 import sys
 
-print("Empty string:", sys.getsizeof(""))        # ~49 bytes
-print("Empty list:",   sys.getsizeof([]))        # ~56 bytes
-print("Empty dict:",   sys.getsizeof({}))        # ~64 bytes
+print("Empty string:", sys.getsizeof(""))  # ~49 bytes
+print("Empty list:",   sys.getsizeof([]))  # ~56 bytes
+print("Empty dict:",   sys.getsizeof({}))  # ~64 bytes
 ```
 
-Every single object carries structural overhead to support Python's dynamic runtime features.
+Every single object on the Python heap carries structural metadata to support the runtime's dynamic capabilities.
 
 ---
 
-## Intermediate: Mechanics & The Virtual Machine
+## The Universal 16-Byte Header and Reference Counting
 
-Let's examine how CPython uses this metadata during program execution.
+Every single object living on CPython's heap begins with the exact same 16-byte structural header:
 
-### The 16-Byte Header
-
-Every object living on CPython's heap begins with the exact same 16-byte structural header:
-
-- **`ob_refcnt` (8 bytes)**: The reference counter.
-- **`ob_type` (8 bytes)**: A pointer pointing to the type descriptor struct (such as `PyLong_Type` or `PyList_Type`).
+- **`ob_refcnt` (8 bytes)**: The reference counter tracking how many active pointers point to this object.
+- **`ob_type` (8 bytes)**: An 8-byte pointer referencing the type descriptor struct (such as `&PyLong_Type` or `&PyList_Type`).
 
 ```mermaid
 flowchart TD
     subgraph Header["Standard 16-Byte PyObject Header"]
-        Ref["ob_refcnt (8 Bytes)<br/>Tracks how many active pointers reference this object"]
+        Ref["ob_refcnt (8 Bytes)<br/>Active pointers referencing this object"]
         Type["*ob_type (8 Bytes)<br/>Pointer to type descriptor struct (&PyLong_Type)"]
     end
 
@@ -93,8 +85,6 @@ flowchart TD
 
     Ref --- Type --- Size --- Digits
 ```
-
-### Deterministic Reference Counting
 
 Because Python doesn't require manual `malloc()` and `free()` calls, it relies on reference counting to reclaim memory automatically:
 
@@ -120,7 +110,7 @@ sequenceDiagram
     Note over Heap: ob_refcnt == 0 -> Freed immediately
 ```
 
-Inspect an object's reference count directly using `sys.getrefcount()`:
+You can inspect an object's reference count directly using `sys.getrefcount()`:
 
 ```python
 import sys
@@ -135,54 +125,13 @@ del y
 print(sys.getrefcount(x) - 1)  # 1
 ```
 
-_(Note: `sys.getrefcount(x)` temporarily creates one extra reference during the function call, so we subtract 1 to see the true count)._
-
-### The Small Integer Cache Puzzle
-
-Because allocating 28 bytes for every small number would be slow, CPython includes a built-in optimization called the **Small Integer Cache**:
-
-At startup, CPython pre-allocates singletons for all integers between **`-5` and `256`**.
-
-```mermaid
-flowchart LR
-    subgraph Frame["Your Local Frame"]
-        varA["Name 'a'"]
-        varB["Name 'b'"]
-    end
-
-    subgraph Cache["CPython Pre-Allocated Cache [-5 to 256]"]
-        singleton["Singleton 100 at 0x10004a0<br/>ob_refcnt: 90+"]
-    end
-
-    varA -->|0x10004a0| singleton
-    varB -->|0x10004a0| singleton
-```
-
-Test this behavior in your terminal:
-
-```python
-# Within the cached range [-5 to 256]:
-a = 100
-b = 100
-print(a is b)        # True: Both point to the exact same shared singleton!
-print(id(a) == id(b)) # True: Identical memory addresses
-
-# Outside the cached range:
-x = 1000
-y = 1000
-print(x is y)        # False: Two separate 28-byte structs on the heap!
-print(id(x) == id(y)) # False: Distinct memory addresses
-```
+_(Note: `sys.getrefcount(x)` temporarily creates one extra reference during the call, so we subtract 1 to see the true count)._
 
 ---
 
-## Advanced: CPython C Internals
+## Memory Optimizations: Structs, Raw RAM, and Singletons
 
-Here is how `PyObject` is defined and manipulated in CPython's C source code.
-
-### The C Struct Definition
-
-In [`Include/object.h`](https://github.com/python/cpython/blob/main/Include/object.h), every Python object starts with `_object`:
+In CPython's C source code ([`Include/object.h`](https://github.com/python/cpython/blob/main/Include/object.h)), the foundational struct is defined as:
 
 ```c
 struct _object {
@@ -204,9 +153,7 @@ struct _varobject {
 typedef struct _varobject PyVarObject;
 ```
 
-### Inspecting Raw C Struct Memory with `ctypes`
-
-Because `id()` returns the literal memory address of the C struct, we can use Python's `ctypes` library to read the raw memory bytes directly:
+Because `id()` returns the literal memory address of the C struct, we can use Python's `ctypes` library to read the raw memory bytes directly from RAM:
 
 ```python
 import ctypes
@@ -227,36 +174,39 @@ On a 64-bit machine:
 - Bytes `16..23`: The `ob_size` field indicating the number of 30-bit digit chunks.
 - Bytes `24..27`: The raw digit value `42`.
 
-### The C Source Implementation of Small Int Caching
+Because allocating 28 bytes for every small number would be slow, CPython includes a built-in optimization: the **Small Integer Cache**.
 
-The small integer pre-allocation logic is located in [`Objects/longobject.c`](https://github.com/python/cpython/blob/main/Objects/longobject.c):
+At startup, CPython pre-allocates singletons for all integers between **`-5` and `256`** in [`Objects/longobject.c`](https://github.com/python/cpython/blob/main/Objects/longobject.c):
 
-```c
-#define _PY_NSMALLPOSINTS 257
-#define _PY_NSMALLNEGINTS 5
+```mermaid
+flowchart LR
+    subgraph Frame["Your Local Frame"]
+        varA["Name 'a'"]
+        varB["Name 'b'"]
+    end
 
-static PyLongObject small_ints[_PY_NSMALLNEGINTS + _PY_NSMALLPOSINTS];
+    subgraph Cache["CPython Pre-Allocated Cache [-5 to 256]"]
+        singleton["Singleton 100 at 0x10004a0<br/>ob_refcnt: 90+"]
+    end
 
-PyObject *
-_PyLong_GetSmallInt_AsRef(int ival)
-{
-    assert(-_PY_NSMALLNEGINTS <= ival && ival < _PY_NSMALLPOSINTS);
-    PyObject *v = (PyObject *)&small_ints[ival + _PY_NSMALLNEGINTS];
-    Py_INCREF(v);
-    return v;
-}
+    varA -->|0x10004a0| singleton
+    varB -->|0x10004a0| singleton
 ```
 
-When an integer is created, CPython checks if `ival >= -5 && ival < 257`. If so, it increments the reference count of the pre-allocated array element and returns that pointer directly, bypassing memory allocation entirely.
+You can test this caching behavior in your terminal:
 
----
+```python
+# Within the cached range [-5 to 256]:
+a = 100
+b = 100
+print(a is b)          # True: Both point to the exact same shared singleton!
+print(id(a) == id(b))  # True: Identical memory addresses
 
-## Summary
+# Outside the cached range:
+x = 1000
+y = 1000
+print(x is y)          # False: Two separate 28-byte structs on the heap!
+print(id(x) == id(y))  # False: Distinct memory addresses
+```
 
-| Layer            | Core Principle                                                                                                     |
-| :--------------- | :----------------------------------------------------------------------------------------------------------------- |
-| **Basics**       | Numbers in Python are wrapped in an "identity badge" carrying type, count, and size metadata.                      |
-| **Intermediate** | The 16-byte header enables automatic reference counting; small ints `[-5, 256]` are cached singletons.             |
-| **Advanced**     | In C, `PyObject` is defined as `ob_refcnt` + `*ob_type`; integers use 30-bit digit arrays for arbitrary precision. |
-
-Next: **[Process Address Space: Stack vs. Heap](/foundations/process-stack-and-heap/)**.
+When an integer within `[-5, 256]` is requested, CPython increments the reference count of the pre-allocated array element and returns that pointer directly, bypassing heap allocation entirely.

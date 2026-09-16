@@ -24,15 +24,9 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: "Overview",
+          label: "Foundations",
           items: [
-            { label: "Introduction", link: "/" },
             { label: "The Mental Model", slug: "foundations/mental-model" },
-          ],
-        },
-        {
-          label: "Memory & Architecture",
-          items: [
             { label: "Physical Hardware & RAM", slug: "foundations/hardware-and-memory" },
             { label: "Process Address Space", slug: "foundations/process-stack-and-heap" },
           ],
