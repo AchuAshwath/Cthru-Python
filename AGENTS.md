@@ -20,3 +20,8 @@ Consult these guides before working on related tasks:
 - [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
 - [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
 - [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+
+## Code Quality & Linting
+
+After making changes, run `bun run lint` and `bun run format:check`, and fix all errors.
+To auto-format code, run `bun run format`.
