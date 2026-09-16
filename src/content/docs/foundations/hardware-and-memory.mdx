@@ -11,12 +11,15 @@ To understand where a Python object lives, we first have to strip away all softw
 
 Imagine a single street that stretches for miles. On one side of the street are billions of tiny mailboxes, numbered sequentially from `0` to `17,179,869,183` (for a 16 GB RAM computer):
 
-```
-Address:    0x0000        0x0001        0x0002        0x0003        0x0004
-         ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐
-Content: │ 01001010  │ │ 11100001  │ │ 00000000  │ │ 11111111  │ │ 00101011  │
-         └───────────┘ └───────────┘ └───────────┘ └───────────┘ └───────────┘
-            (Byte 0)      (Byte 1)      (Byte 2)      (Byte 3)      (Byte 4)
+```mermaid
+flowchart LR
+    M0["Address 0x0000<br/>Byte 0: 01001010"]
+    M1["Address 0x0001<br/>Byte 1: 11100001"]
+    M2["Address 0x0002<br/>Byte 2: 00000000"]
+    M3["Address 0x0003<br/>Byte 3: 11111111"]
+    M4["Address 0x0004<br/>Byte 4: 00101011"]
+
+    M0 --- M1 --- M2 --- M3 --- M4
 ```
 
 Each mailbox holds exactly **8 bits (1 Byte)**.
@@ -48,12 +51,35 @@ You often hear that modern operating systems and Python are **64-bit**. What doe
 
 The Central Processing Unit (CPU) doesn't understand Python, English, or mathematics. It understands a tiny set of primitive operations wired into silicon:
 
-1. **Registers**: A dozen tiny, ultra-fast internal storage slots (like `RAX`, `RBX`, `RSP`).
-2. **Program Counter (PC)**: A register that holds the memory address of the _next machine instruction_ to execute.
-3. **The Fetch-Decode-Execute Cycle**:
-   - **Fetch**: Read the byte at the address pointed to by the Program Counter.
-   - **Decode**: What does this instruction mean? (e.g. `0x48 0x01 0xD8` means `ADD RAX, RBX`).
-   - **Execute**: Perform the electrical arithmetic and advance the Program Counter.
+```mermaid
+flowchart TD
+    subgraph CPU["Central Processing Unit (CPU)"]
+        PC["Program Counter (PC)<br/>Holds address of NEXT instruction"]
+        Regs["Registers (RAX, RBX, RSP)<br/>Ultra-fast internal scratchpad"]
+        ALU["Arithmetic Logic Unit (ALU)<br/>Executes electrical math (+, -, AND, OR)"]
+    end
+
+    subgraph Bus["System Address & Data Bus"]
+        DataLines["High-speed copper interconnect"]
+    end
+
+    subgraph Memory["RAM (System Memory)"]
+        Instructions["0x1000: Machine Code Instructions"]
+        DataBytes["0x8000: Data & Variables"]
+    end
+
+    PC -->|1. Fetch Address| DataLines
+    DataLines -->|2. Return Opcode| Regs
+    Regs -->|3. Calculate| ALU
+    ALU -->|4. Store Result| DataLines
+    DataLines -->|5. Write Back| DataBytes
+```
+
+### The Fetch-Decode-Execute Cycle
+
+1. **Fetch**: Read the byte at the address pointed to by the Program Counter.
+2. **Decode**: What does this instruction mean? (e.g. `0x48 0x01 0xD8` means `ADD RAX, RBX`).
+3. **Execute**: Perform the electrical arithmetic and advance the Program Counter.
 
 The CPU runs this loop **billions of times per second**.
 

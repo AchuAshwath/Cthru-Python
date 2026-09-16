@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import react from "@astrojs/react";
+import mermaid from "astro-mermaid";
 import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
@@ -42,6 +43,7 @@ export default defineConfig({
       ],
     }),
     react(),
+    mermaid(),
   ],
 
   vite: {

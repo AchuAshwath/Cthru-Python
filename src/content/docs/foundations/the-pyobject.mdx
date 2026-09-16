@@ -32,20 +32,24 @@ struct _object {
 };
 ```
 
-```
-           THE UNIVERSAL PyObject HEADER (16 Bytes)
-┌──────────────────────────────┬──────────────────────────────┐
-│       ob_refcnt (8 bytes)    │     *ob_type (8 bytes)       │
-│  "How many variables point   │  "What kind of object am I?  │
-│          to me?"             │   Points to PyLong_Type"     │
-└──────────────────────────────┴──────────────────────────────┘
-                               │
-                               ▼
-                   PAYLOAD DATA (Type Specific)
-               ┌────────────────────────────────┐
-               │    ob_size (8 bytes)           │
-               │    digits / value (4+ bytes)   │
-               └────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Header["THE 16-BYTE PyObject HEADER"]
+        Ref["ob_refcnt (8 Bytes)<br/>How many pointers reference this object?"]
+        Type["*ob_type (8 Bytes)<br/>Pointer to Type descriptor (e.g. &PyLong_Type)"]
+    end
+
+    subgraph Payload["TYPE-SPECIFIC PAYLOAD (PyLongObject)"]
+        Size["ob_size (8 Bytes)<br/>Digit chunk count & sign"]
+        Digits["ob_digit (4+ Bytes)<br/>Actual numeric value bytes"]
+    end
+
+    Ref --- Type --- Size --- Digits
+
+    style Ref fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style Type fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
+    style Size fill:#334155,stroke:#64748b,stroke-width:1px,color:#fff
+    style Digits fill:#4c1d95,stroke:#8b5cf6,stroke-width:1px,color:#fff
 ```
 
 Let's break down the 28 bytes of an integer:
@@ -88,6 +92,25 @@ It uses **Reference Counting**:
 - Every time a variable is deleted (`del x`) or falls out of scope, its `ob_refcnt` decreases by 1.
 - When `ob_refcnt == 0`, CPython immediately reclaims that memory block.
 
+```mermaid
+sequenceDiagram
+    participant S as Stack Frame (Variables)
+    participant H as Heap Object: [1, 2, 3]
+
+    Note over H: Initial allocation: ob_refcnt = 1
+    S->>H: my_list = [1, 2, 3]
+    Note over H: ob_refcnt = 1
+
+    S->>H: alias = my_list (Second pointer created)
+    Note over H: ob_refcnt = 2
+
+    S->>H: del alias (One pointer removed)
+    Note over H: ob_refcnt = 1
+
+    S->>H: del my_list (Last pointer removed)
+    Note over H: ob_refcnt = 0 ➔ Memory FREED immediately!
+```
+
 ```python
 import sys
 
@@ -106,8 +129,6 @@ del alias
 print(sys.getrefcount(my_list) - 1) # Output: 1!
 ```
 
-_(Note: `sys.getrefcount(obj)` temporarily creates 1 additional reference when passing `obj` into the function, so we subtract 1 to see the real count)._
-
 ---
 
 ## 4. The CPython Singleton Optimization
@@ -115,6 +136,25 @@ _(Note: `sys.getrefcount(obj)` temporarily creates 1 additional reference when p
 Because allocating 28 bytes for every small integer would be slow, CPython includes a built-in optimization called the **Small Integer Cache**:
 
 During startup, CPython pre-allocates a single array of `PyLongObject` singletons for all integers from **`-5` to `256`**.
+
+```mermaid
+flowchart LR
+    subgraph Stack["Stack Frame (Variables)"]
+        varA["Variable 'a'"]
+        varB["Variable 'b'"]
+    end
+
+    subgraph Cache["Small Integer Cache [-5 to 256]"]
+        singleton["Singleton PyLongObject(100)<br/>Memory Address: 0x10004a0<br/>ob_refcnt: 94+"]
+    end
+
+    varA -->|id(a) = 0x10004a0| singleton
+    varB -->|id(b) = 0x10004a0| singleton
+
+    style singleton fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
+    style varA fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff
+    style varB fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff
+```
 
 Test this in your terminal:
 
@@ -128,7 +168,7 @@ print(id(a) == id(b)) # True!
 # Outside the cache:
 x = 1000
 y = 1000
-print(x is b)        # False! (Two separate objects on the heap)
+print(x is y)        # False! (Two separate objects on the heap)
 print(id(x) == id(y)) # False!
 ```
 

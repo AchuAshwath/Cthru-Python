@@ -25,22 +25,21 @@ _(There are other implementations: PyPy uses a Just-In-Time compiler; Jython run
 
 When you run `python main.py`, your code does not get executed line-by-line as raw text. It goes through four distinct stages:
 
-```
-1. Source Code (Text)
-   "x = 10 + 20"
-         │
-         ▼
-2. Tokenizer & Parser
-   Turns text into an Abstract Syntax Tree (AST)
-         │
-         ▼
-3. Bytecode Compiler
-   Compiles AST into Python Bytecode (.pyc / PyCodeObject)
-   [LOAD_CONST 10, LOAD_CONST 20, BINARY_OP, STORE_NAME x]
-         │
-         ▼
-4. The CPython Virtual Machine (ceval.c)
-   The C loop that executes each bytecode instruction
+```mermaid
+flowchart TD
+    S1["1. Source Code (Text)<br/>x = 10 + 20"]
+    S2["2. Tokenizer & Parser<br/>Abstract Syntax Tree (AST)"]
+    S3["3. Bytecode Compiler<br/>PyCodeObject (.pyc)<br/>LOAD_CONST, BINARY_OP, STORE_FAST"]
+    S4["4. CPython Virtual Machine (ceval.c)<br/>while(1) { switch(*opcode) }"]
+    CPU["5. Hardware Execution<br/>CPU Registers & RAM"]
+
+    S1 --> S2 --> S3 --> S4 --> CPU
+
+    style S1 fill:#334155,stroke:#64748b,stroke-width:1px,color:#fff
+    style S2 fill:#334155,stroke:#64748b,stroke-width:1px,color:#fff
+    style S3 fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style S4 fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
+    style CPU fill:#4c1d95,stroke:#8b5cf6,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -118,4 +117,4 @@ for (;;) {
 
 Every single time your Python program runs, a real compiled C program is stepping through these bytecode numbers, manipulating pointers on your computer's RAM.
 
-Now that we know who is running the show, let's meet the most fundamental citizen in Python's universe: **[The Universal PyObject](/foundations/the-pyobject)**.
+Now that we know who is running the show, let's meet the most fundamental citizen in Python's universe: **[The Universal PyObject](/foundations/the-pyobject/)**.

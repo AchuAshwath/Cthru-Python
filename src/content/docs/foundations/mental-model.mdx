@@ -58,6 +58,31 @@ Here is the single most important conceptual leap in Python:
   </Card>
 </CardGrid>
 
+### Visualizing the Truth
+
+When you execute `a = [1, 2, 3]` followed by `b = a`, here is what CPython actually builds in your computer's memory:
+
+```mermaid
+flowchart LR
+    subgraph Stack["Call Stack (Current Frame)"]
+        varA["Variable 'a'"]
+        varB["Variable 'b'"]
+    end
+
+    subgraph Heap["Private Heap"]
+        listObj["PyListObject at 0x105a20<br/>Elements: [ 1, 2, 3, 4 ]<br/>ob_refcnt: 2"]
+    end
+
+    varA -->|holds pointer 0x105a20| listObj
+    varB -->|holds pointer 0x105a20| listObj
+
+    style listObj fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style varA fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff
+    style varB fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff
+```
+
+When you call `b.append(4)`, you follow the pointer stored in `b` to the heap struct at address `0x105a20` and mutate it in-place. Because `a` points to that exact same address, printing `a` shows the updated list!
+
 In Python:
 
 1. **Values have types, variables do not.**
@@ -70,14 +95,16 @@ In Python:
 
 Throughout Cthru-Python, every concept is presented across three progressive depths:
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ Layer 1: High-Level Python Intuition (Clean mental models)     │
-├─────────────────────────────────────────────────────────────────┤
-│ Layer 2: The CPython Virtual Machine (Bytecode & Stack Frames)  │
-├─────────────────────────────────────────────────────────────────┤
-│ Layer 3: The C-Level Anatomy (PyObject structs, RAM addresses)   │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    L1["Layer 1: High-Level Python Intuition<br/>Clean conceptual mental models & plain English"]
+    L2["Layer 2: The CPython Virtual Machine<br/>Bytecode opcodes, Stack Frames, and ceval.c"]
+    L3["Layer 3: The C-Level Anatomy<br/>PyObject structs, RAM addresses, and byte sizes"]
+
+    L1 --> L2 --> L3
+    style L1 fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
+    style L2 fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style L3 fill:#4c1d95,stroke:#8b5cf6,stroke-width:2px,color:#fff
 ```
 
 You can read the docs at Layer 1 to build your intuition, and peel back Layer 2 and Layer 3 as you level up your systems understanding.
@@ -88,7 +115,7 @@ You can read the docs at Layer 1 to build your intuition, and peel back Layer 2 
 
 Before we write variables or create functions, we start at the true first principles:
 
-1. **[The Physical Machine & RAM](/foundations/hardware-and-memory)**: How computers store and address bytes.
-2. **[Anatomy of a Running Process](/foundations/process-stack-and-heap)**: How operating systems divide memory into Code, Stack, and Heap.
-3. **[What Actually is Python?](/foundations/what-is-python)**: Why Python is a spec, CPython is a C program, and bytecode is the bridge.
-4. **[The Universal PyObject](/foundations/the-pyobject)**: The secret 16-byte header that lives on every piece of data in Python.
+1. **[The Physical Machine & RAM](/foundations/hardware-and-memory/)**: How computers store and address bytes.
+2. **[Anatomy of a Running Process](/foundations/process-stack-and-heap/)**: How operating systems divide memory into Code, Stack, and Heap.
+3. **[What Actually is Python?](/foundations/what-is-python/)**: Why Python is a spec, CPython is a C program, and bytecode is the bridge.
+4. **[The Universal PyObject](/foundations/the-pyobject/)**: The secret 16-byte header that lives on every piece of data in Python.

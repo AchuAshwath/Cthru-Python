@@ -13,26 +13,23 @@ A process is an isolated sandbox. The OS assigns it a private, virtual memory ad
 
 A running program's memory is organized into distinct zones:
 
-```
-High Memory Addresses (0x7FFF... / 0xFFFF...)
-┌────────────────────────────────────────────────────────┐
-│                   THE CALL STACK                       │
-│  (Grows downwards: function calls, return addresses)    │
-│                        │                               │
-│                        ▼                               │
-│                                                        │
-│                        ▲                               │
-│                        │                               │
-│                    THE HEAP                            │
-│  (Grows upwards: dynamically allocated objects/data)   │
-├────────────────────────────────────────────────────────┤
-│                   BSS & DATA SEGMENTS                  │
-│  (Global variables, static constants)                  │
-├────────────────────────────────────────────────────────┤
-│                   TEXT / CODE SEGMENT                  │
-│  (Read-only compiled machine instructions)             │
-└────────────────────────────────────────────────────────┘
-Low Memory Addresses (0x0000...)
+```mermaid
+flowchart TD
+    subgraph ProcessMemory["Process Virtual Memory (64-Bit Space)"]
+        direction TB
+        Stack["THE CALL STACK (High Memory: 0x7FFF...)<br/>• Function call frames (PyFrameObject)<br/>• Fast, rigid, LIFO structure<br/>⬇️ Grows Downwards"]
+        Gap["[ Dynamic Memory Free Gap ]"]
+        Heap["THE PRIVATE HEAP<br/>• Dynamically allocated objects (All PyObjects)<br/>• Flexible lifetimes, managed by allocator<br/>⬆️ Grows Upwards"]
+        Data["DATA & BSS SEGMENT<br/>• Global variables, static constants, string table"]
+        Text["TEXT / CODE SEGMENT (Low Memory: 0x0000...)<br/>• Read-only compiled machine instructions of CPython binary"]
+    end
+
+    Stack --- Gap --- Heap --- Data --- Text
+
+    style Stack fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style Heap fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
+    style Data fill:#334155,stroke:#64748b,stroke-width:1px,color:#fff
+    style Text fill:#1e293b,stroke:#475569,stroke-width:1px,color:#fff
 ```
 
 ---
@@ -79,16 +76,22 @@ What actually happens:
 1. CPython's memory allocator allocates a struct on the **Heap** representing the integer `42`.
 2. On the **Call Stack**, inside the current execution frame (`PyFrameObject`), a dictionary key `'x'` stores the **Heap memory address** (the pointer) to `42`.
 
-```
-CALL STACK (Fast Scratchpad)              PRIVATE HEAP (Warehouse)
-┌─────────────────────────┐               ┌───────────────────────────────┐
-│ Frame: <module>         │               │ Address: 0x10a2f0             │
-│                         │               │ Type: int                     │
-│ Variable "x"  ──────────┼──────────────▶│ Value: 42                     │
-│ (holds 0x10a2f0)        │               │ ob_refcnt: 1                  │
-└─────────────────────────┘               └───────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph Stack["CALL STACK (Fast Scratchpad)"]
+        Frame["PyFrameObject: <module><br/>f_locals: {'x': 0x10a2f0}"]
+    end
+
+    subgraph Heap["PRIVATE HEAP (Warehouse)"]
+        IntObj["PyLongObject<br/>Address: 0x10a2f0<br/>Type: int<br/>Value: 42<br/>ob_refcnt: 1"]
+    end
+
+    Frame -->|points to 0x10a2f0| IntObj
+
+    style Frame fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff
+    style IntObj fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#fff
 ```
 
 This fundamental truth explains why Python is dynamically typed, why variables can point to any type at runtime, and why reference counting is necessary.
 
-Next: **[What Actually is Python?](/foundations/what-is-python)**
+Next: **[What Actually is Python?](/foundations/what-is-python/)**
