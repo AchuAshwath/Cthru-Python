@@ -5,7 +5,7 @@
   <!-- Trigger Button -->
   <button
     type="button"
-    class="theme-toggle-trigger inline-flex items-center justify-center h-8 w-8 rounded-md border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:text-zinc-100 text-zinc-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 cursor-pointer relative"
+    class="theme-toggle-trigger inline-flex items-center justify-center h-8 w-8 rounded-md border border-[#1e293b] bg-[#0a0f1d]/80 hover:border-[#3776ab]/60 hover:bg-[#0f2338]/40 hover:text-zinc-100 text-zinc-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#58a6ff] cursor-pointer relative"
     aria-label="Toggle theme"
     aria-haspopup="true"
     aria-expanded="false"
@@ -54,7 +54,7 @@
 
   <!-- Dropdown Menu -->
   <div
-    class="theme-dropdown absolute right-0 mt-1.5 w-36 rounded-md border border-zinc-800 bg-zinc-950 p-1 text-zinc-200 shadow-xl z-50 backdrop-blur-md hidden transition-all"
+    class="theme-dropdown absolute right-0 mt-1.5 w-36 rounded-md border border-[#1e293b] bg-[#0a0f1d] p-1 text-zinc-200 shadow-xl z-50 backdrop-blur-md hidden transition-all"
     role="menu"
     aria-orientation="vertical"
   >
@@ -62,7 +62,7 @@
       type="button"
       data-theme-value="light"
       role="menuitem"
-      class="theme-option flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-1.5 text-xs font-medium outline-none hover:bg-zinc-800 hover:text-white transition-colors text-zinc-300"
+      class="theme-option flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-1.5 text-xs font-medium outline-none hover:bg-[#0f2338]/60 hover:text-white transition-colors text-zinc-300"
     >
       <span class="flex items-center gap-2">
         <svg
@@ -99,7 +99,7 @@
         stroke-width="2.5"
         stroke-linecap="round"
         stroke-linejoin="round"
-        class="check-icon opacity-0 transition-opacity"
+        class="check-icon opacity-0 transition-opacity text-[#ffd43b]"
       >
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
@@ -109,7 +109,7 @@
       type="button"
       data-theme-value="dark"
       role="menuitem"
-      class="theme-option flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-1.5 text-xs font-medium outline-none hover:bg-zinc-800 hover:text-white transition-colors text-zinc-300"
+      class="theme-option flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-1.5 text-xs font-medium outline-none hover:bg-[#0f2338]/60 hover:text-white transition-colors text-zinc-300"
     >
       <span class="flex items-center gap-2">
         <svg
@@ -138,7 +138,7 @@
         stroke-width="2.5"
         stroke-linecap="round"
         stroke-linejoin="round"
-        class="check-icon opacity-0 transition-opacity"
+        class="check-icon opacity-0 transition-opacity text-[#ffd43b]"
       >
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
@@ -148,7 +148,7 @@
       type="button"
       data-theme-value="auto"
       role="menuitem"
-      class="theme-option flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-1.5 text-xs font-medium outline-none hover:bg-zinc-800 hover:text-white transition-colors text-zinc-300"
+      class="theme-option flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-1.5 text-xs font-medium outline-none hover:bg-[#0f2338]/60 hover:text-white transition-colors text-zinc-300"
     >
       <span class="flex items-center gap-2">
         <svg
@@ -179,7 +179,7 @@
         stroke-width="2.5"
         stroke-linecap="round"
         stroke-linejoin="round"
-        class="check-icon opacity-0 transition-opacity"
+        class="check-icon opacity-0 transition-opacity text-[#ffd43b]"
       >
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
@@ -207,38 +207,41 @@
     opacity: 0;
   }
 
-  /* Light mode adaptations for shadcn theme changer */
+  /* Light mode adaptations */
   :root[data-theme="light"] .theme-toggle-trigger {
-    border-color: #e4e4e7;
+    border-color: #e2e8f0;
     background-color: #ffffff;
-    color: #71717a;
+    color: #475569;
   }
   :root[data-theme="light"] .theme-toggle-trigger:hover {
-    background-color: #f4f4f5;
-    color: #09090b;
-    border-color: #d4d4d8;
+    background-color: #f1f5f9;
+    color: #0f172a;
+    border-color: #3776ab;
   }
 
   :root[data-theme="light"] .theme-dropdown {
-    border-color: #e4e4e7;
+    border-color: #e2e8f0;
     background-color: #ffffff;
-    color: #09090b;
+    color: #0f172a;
     box-shadow:
-      0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      0 10px 15px -3px rgba(0, 0, 0, 0.08),
+      0 4px 6px -4px rgba(0, 0, 0, 0.04);
   }
 
   :root[data-theme="light"] .theme-option {
-    color: #3f3f46;
+    color: #475569;
   }
   :root[data-theme="light"] .theme-option:hover {
-    background-color: #f4f4f5;
-    color: #09090b;
+    background-color: #f1f5f9;
+    color: #0f172a;
   }
   :root[data-theme="light"] .theme-option.is-selected {
-    background-color: #f4f4f5;
-    color: #09090b;
+    background-color: #e8f2fc;
+    color: #205081;
     font-weight: 600;
+  }
+  :root[data-theme="light"] .theme-option.is-selected .check-icon {
+    color: #d99b00;
   }
 </style>
 
@@ -276,11 +279,11 @@
           if (optVal === theme) {
             check.classList.remove("opacity-0");
             check.classList.add("opacity-100");
-            option.classList.add("is-selected", "bg-zinc-800/60", "text-white");
+            option.classList.add("is-selected", "bg-[#0f2338]/80", "text-[#58a6ff]");
           } else {
             check.classList.add("opacity-0");
             check.classList.remove("opacity-100");
-            option.classList.remove("is-selected", "bg-zinc-800/60", "text-white");
+            option.classList.remove("is-selected", "bg-[#0f2338]/80", "text-[#58a6ff]");
           }
         }
       });

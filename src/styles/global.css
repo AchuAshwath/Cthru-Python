@@ -1,19 +1,27 @@
 @import "tailwindcss";
 
-/* Shadcn-inspired Dark High-Contrast Theme */
-:root {
-  --sl-color-accent-low: #18181b;
-  --sl-color-accent: #f4f4f5;
-  --sl-color-accent-high: #ffffff;
+/* 
+  Cthru-Python Design System
+  - Neutrals: White & Black adjusted with deep Python midnight slate
+  - Secondary: Python Blue (#3776AB / #4B8BBE)
+  - Tertiary: Python Yellow (#FFD43B / #FFE873)
+*/
 
-  --sl-color-black: #09090b;
-  --sl-color-gray-6: #0c0c0e;
-  --sl-color-gray-5: #18181b;
-  --sl-color-gray-4: #27272a;
-  --sl-color-gray-3: #3f3f46;
-  --sl-color-gray-2: #a1a1aa;
-  --sl-color-gray-1: #e4e4e7;
-  --sl-color-white: #f4f4f5;
+:root {
+  /* Secondary: Python Blue */
+  --sl-color-accent-low: #0f2338;
+  --sl-color-accent: #3776ab;
+  --sl-color-accent-high: #58a6ff;
+
+  /* Neutrals: Cool, Python-tinted dark */
+  --sl-color-black: #060911;
+  --sl-color-gray-6: #0a0f1d;
+  --sl-color-gray-5: #10172a;
+  --sl-color-gray-4: #1e293b;
+  --sl-color-gray-3: #334155;
+  --sl-color-gray-2: #94a3b8;
+  --sl-color-gray-1: #cbd5e1;
+  --sl-color-white: #f8fafc;
 
   --sl-font:
     -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
@@ -22,29 +30,40 @@
 }
 
 :root[data-theme="dark"] {
-  --sl-color-bg: #09090b;
-  --sl-color-bg-nav: #09090b;
-  --sl-color-bg-sidebar: #09090b;
-  --sl-color-hairline: #27272a;
+  --sl-color-bg: #070b14;
+  --sl-color-bg-nav: #070b14;
+  --sl-color-bg-sidebar: #05080f;
+  --sl-color-hairline: #172338;
+
+  --python-blue: #3776ab;
+  --python-blue-light: #58a6ff;
+  --python-yellow: #ffd43b;
+  --python-yellow-light: #ffe873;
 }
 
 :root[data-theme="light"] {
   --sl-color-bg: #ffffff;
   --sl-color-bg-nav: #ffffff;
-  --sl-color-bg-sidebar: #fbfbfa;
-  --sl-color-hairline: #e4e4e7;
+  --sl-color-bg-sidebar: #f8fafc;
+  --sl-color-hairline: #e2e8f0;
 
   --sl-color-black: #ffffff;
-  --sl-color-white: #09090b;
-  --sl-color-gray-1: #18181b;
-  --sl-color-gray-2: #71717a;
-  --sl-color-gray-3: #d4d4d8;
-  --sl-color-gray-4: #e4e4e7;
-  --sl-color-gray-5: #f4f4f5;
-  --sl-color-gray-6: #fafafa;
-  --sl-color-accent-low: #f4f4f5;
-  --sl-color-accent: #18181b;
-  --sl-color-accent-high: #09090b;
+  --sl-color-white: #0a0f1d;
+  --sl-color-gray-1: #0f172a;
+  --sl-color-gray-2: #475569;
+  --sl-color-gray-3: #cbd5e1;
+  --sl-color-gray-4: #e2e8f0;
+  --sl-color-gray-5: #f1f5f9;
+  --sl-color-gray-6: #f8fafc;
+
+  --sl-color-accent-low: #e8f2fc;
+  --sl-color-accent: #3776ab;
+  --sl-color-accent-high: #205081;
+
+  --python-blue: #3776ab;
+  --python-blue-light: #205081;
+  --python-yellow: #d99b00;
+  --python-yellow-light: #b37d00;
 }
 
 /* Single-page no-scroll hero landing */
@@ -118,11 +137,23 @@ h4 {
   letter-spacing: -0.025em;
 }
 
+/* Active navigation item with Python Blue accent */
+.sidebar-content a[aria-current="page"] {
+  color: var(--sl-color-accent-high) !important;
+  background-color: var(--sl-color-accent-low) !important;
+  border-left: 2px solid var(--sl-color-accent) !important;
+  font-weight: 600;
+}
+
+.sidebar-content a:hover {
+  color: var(--sl-color-accent-high) !important;
+}
+
 /* Clean code block presentation */
 pre {
-  border: 1px solid #27272a !important;
+  border: 1px solid #1a2538 !important;
   border-radius: 8px !important;
-  background-color: #121215 !important;
+  background-color: #0b1120 !important;
 }
 
 code {
@@ -133,8 +164,8 @@ code {
 .mermaid {
   display: flex;
   justify-content: center;
-  background: #121215;
-  border: 1px solid #27272a;
+  background: #0b1120;
+  border: 1px solid #1a2538;
   border-radius: 8px;
   padding: 1.25rem;
   margin: 1.5rem 0;
@@ -143,27 +174,35 @@ code {
 
 /* Shadcn consistent Card styling */
 .card {
-  background: #121215 !important;
-  border: 1px solid #27272a !important;
+  background: #0c1222 !important;
+  border: 1px solid #1a2538 !important;
   border-radius: 8px !important;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-/* Shadcn consistent callout asides */
+.card:hover {
+  border-color: #2b3e60 !important;
+}
+
+/* Callout Asides using Python Blue (Note) and Python Yellow (Tip) */
 .starlight-aside {
-  background-color: #121215 !important;
-  border: 1px solid #27272a !important;
+  background-color: #0c1222 !important;
+  border: 1px solid #1a2538 !important;
   border-left-width: 3px !important;
   border-radius: 8px !important;
-  color: #f4f4f5 !important;
+  color: #f8fafc !important;
 }
 
+/* Note: Python Blue */
 .starlight-aside--note {
-  border-left-color: #3b82f6 !important;
+  border-left-color: #3776ab !important;
+  background-color: rgba(55, 118, 171, 0.08) !important;
 }
 
+/* Tip: Python Yellow / Gold */
 .starlight-aside--tip {
-  border-left-color: #10b981 !important;
+  border-left-color: #ffd43b !important;
+  background-color: rgba(255, 212, 59, 0.08) !important;
 }
 
 .starlight-aside--caution {
@@ -176,23 +215,33 @@ code {
 
 /* Light mode component adaptations */
 :root[data-theme="light"] pre {
-  border: 1px solid #e4e4e7 !important;
+  border: 1px solid #e2e8f0 !important;
   background-color: #f8fafc !important;
 }
 
 :root[data-theme="light"] .mermaid {
   background: #f8fafc;
-  border: 1px solid #e4e4e7;
+  border: 1px solid #e2e8f0;
 }
 
 :root[data-theme="light"] .card {
   background: #ffffff !important;
-  border: 1px solid #e4e4e7 !important;
+  border: 1px solid #e2e8f0 !important;
 }
 
 :root[data-theme="light"] .starlight-aside {
   background-color: #f8fafc !important;
-  border: 1px solid #e4e4e7 !important;
+  border: 1px solid #e2e8f0 !important;
   border-left-width: 3px !important;
-  color: #09090b !important;
+  color: #0f172a !important;
+}
+
+:root[data-theme="light"] .starlight-aside--note {
+  border-left-color: #3776ab !important;
+  background-color: rgba(55, 118, 171, 0.06) !important;
+}
+
+:root[data-theme="light"] .starlight-aside--tip {
+  border-left-color: #d99b00 !important;
+  background-color: rgba(255, 212, 59, 0.1) !important;
 }
