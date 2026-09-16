@@ -1,24 +1,28 @@
 ---
 const { entry } = Astro.locals.starlightRoute;
-const { title = entry.data.title, tagline } = entry.data.hero || {};
+const hero = entry.data.hero || {};
+const title = hero.title || entry.data.title;
+const tag = hero.tag || "CPython Architecture Guide";
+const tagline = hero.tagline || "";
 ---
 
 <div class="cthru-hero-container w-full flex items-center justify-center">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14 items-center w-full max-w-5xl mx-auto px-4 md:px-6">
     <!-- Left Column: Copy & Actions -->
-    <div class="flex flex-col items-start text-left space-y-5">
-      <!-- Subtle Python Badge -->
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-[#1e293b] bg-[#0a0f1d] text-zinc-300">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#ffd43b] shadow-[0_0_6px_#ffd43b]"></span>
-        <span>Python Memory & Internals</span>
+    <div class="flex flex-col items-start text-left space-y-4">
+      <!-- Eyebrow Tag -->
+      <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-mono border border-[#1e293b] bg-[#0a0f1d] text-zinc-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#ffd43b]"></span>
+        <span>{tag}</span>
       </div>
 
+      <!-- Headline & Tagline -->
       <div class="space-y-3">
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white m-0">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-white leading-[1.15] m-0">
           {title}
         </h1>
         {tagline && (
-          <p class="text-zinc-400 text-base md:text-lg leading-relaxed max-w-lg font-normal m-0 pt-1">
+          <p class="text-zinc-400 text-sm sm:text-base leading-relaxed font-normal m-0 max-w-lg">
             {tagline}
           </p>
         )}
