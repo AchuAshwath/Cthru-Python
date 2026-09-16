@@ -1,1 +1,294 @@
 @import "tailwindcss";
+
+/* 
+  Cthru-Python Design System
+  - Primary Neutrals: Crisp White (#f8fafc) & Deep Midnight Slate (#070b14 / #0a0f1d)
+  - Secondary Accent (Subtle): Python Blue (#3776AB / #58A6FF)
+  - Tertiary Accent (Subtle): Python Yellow (#FFD43B / #FFE873)
+*/
+
+:root {
+  /* Secondary Accent: Python Blue */
+  --sl-color-accent-low: rgba(55, 118, 171, 0.1);
+  --sl-color-accent: #3776ab;
+  --sl-color-accent-high: #58a6ff;
+
+  /* Primary Neutrals: Python-tinted midnight dark */
+  --sl-color-black: #060911;
+  --sl-color-gray-6: #0a0f1d;
+  --sl-color-gray-5: #10172a;
+  --sl-color-gray-4: #1e293b;
+  --sl-color-gray-3: #334155;
+  --sl-color-gray-2: #94a3b8;
+  --sl-color-gray-1: #cbd5e1;
+  --sl-color-white: #f8fafc;
+
+  --sl-font:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  --sl-font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+:root[data-theme="dark"] {
+  --sl-color-bg: #070b14;
+  --sl-color-bg-nav: #070b14;
+  --sl-color-bg-sidebar: #05080f;
+  --sl-color-hairline: #172338;
+}
+
+:root[data-theme="light"] {
+  --sl-color-bg: #ffffff;
+  --sl-color-bg-nav: #ffffff;
+  --sl-color-bg-sidebar: #f8fafc;
+  --sl-color-hairline: #e2e8f0;
+
+  --sl-color-black: #ffffff;
+  --sl-color-white: #0a0f1d;
+  --sl-color-gray-1: #0f172a;
+  --sl-color-gray-2: #475569;
+  --sl-color-gray-3: #cbd5e1;
+  --sl-color-gray-4: #e2e8f0;
+  --sl-color-gray-5: #f1f5f9;
+  --sl-color-gray-6: #f8fafc;
+
+  --sl-color-accent-low: #e8f2fc;
+  --sl-color-accent: #3776ab;
+  --sl-color-accent-high: #205081;
+}
+
+/* Navbar & Site Title: Clean White in Dark Mode, Clean Black in Light Mode */
+:root[data-theme="dark"] .site-title {
+  color: #f8fafc !important;
+}
+
+:root[data-theme="dark"] .social-icons a {
+  color: #f8fafc !important;
+}
+
+:root[data-theme="dark"] .social-icons a:hover {
+  color: #ffffff !important;
+  opacity: 0.85;
+}
+
+:root[data-theme="light"] .site-title {
+  color: #0a0f1d !important;
+}
+
+:root[data-theme="light"] .social-icons a {
+  color: #0a0f1d !important;
+}
+
+:root[data-theme="light"] .social-icons a:hover {
+  color: #000000 !important;
+  opacity: 0.85;
+}
+
+/* Sidebar Headings & Categories: Clean White / Neutral */
+:root[data-theme="dark"] .sidebar-content summary,
+:root[data-theme="dark"] .sidebar-content .large,
+:root[data-theme="dark"] .sidebar-content h2,
+:root[data-theme="dark"] .sidebar-pane .group-label {
+  color: #f8fafc !important;
+}
+
+:root[data-theme="light"] .sidebar-content summary,
+:root[data-theme="light"] .sidebar-content .large,
+:root[data-theme="light"] .sidebar-content h2,
+:root[data-theme="light"] .sidebar-pane .group-label {
+  color: #0a0f1d !important;
+}
+
+/* Active sidebar item: White text with subtle Python Blue accent border */
+:root[data-theme="dark"] .sidebar-content a[aria-current="page"] {
+  color: #ffffff !important;
+  background-color: rgba(55, 118, 171, 0.12) !important;
+  border-left: 2px solid #3776ab !important;
+  font-weight: 600;
+}
+
+:root[data-theme="dark"] .sidebar-content a:hover {
+  color: #ffffff !important;
+}
+
+:root[data-theme="light"] .sidebar-content a[aria-current="page"] {
+  color: #0a0f1d !important;
+  background-color: rgba(55, 118, 171, 0.08) !important;
+  border-left: 2px solid #3776ab !important;
+  font-weight: 600;
+}
+
+/* Single-page no-scroll hero landing */
+@media (min-width: 768px) {
+  html[data-has-hero],
+  html[data-has-hero] body {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  html[data-has-hero] .page {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  html[data-has-hero] .main-frame {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  html[data-has-hero] .main-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  html[data-has-hero] main {
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+
+  html[data-has-hero] .content-panel {
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  html[data-has-hero] .sl-container {
+    max-width: 1360px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 2rem;
+  }
+
+  .cthru-hero-container {
+    min-height: calc(100vh - var(--sl-nav-height) - 1.5rem);
+  }
+}
+
+html[data-has-hero] footer {
+  display: none !important;
+}
+
+html[data-has-hero] .sl-markdown-content:empty {
+  display: none !important;
+}
+
+/* Headings: Crisp White in dark mode, crisp Black in light mode */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: #f8fafc;
+}
+
+:root[data-theme="light"] h1,
+:root[data-theme="light"] h2,
+:root[data-theme="light"] h3,
+:root[data-theme="light"] h4 {
+  color: #0a0f1d;
+}
+
+/* Clean code block presentation */
+pre {
+  border: 1px solid #1a2538 !important;
+  border-radius: 8px !important;
+  background-color: #0b1120 !important;
+}
+
+code {
+  font-size: 0.875em;
+}
+
+/* Minimalist Mermaid diagram containers */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  background: #0b1120;
+  border: 1px solid #1a2538;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+/* Shadcn consistent Card styling */
+.card {
+  background: #0c1222 !important;
+  border: 1px solid #1a2538 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  border-color: #2b3e60 !important;
+}
+
+/* Callout Asides with subtle Python Blue (Note) and Python Yellow (Tip) accents */
+.starlight-aside {
+  background-color: #0c1222 !important;
+  border: 1px solid #1a2538 !important;
+  border-left-width: 3px !important;
+  border-radius: 8px !important;
+  color: #f8fafc !important;
+}
+
+/* Note: Subtle Python Blue accent */
+.starlight-aside--note {
+  border-left-color: #3776ab !important;
+  background-color: rgba(55, 118, 171, 0.08) !important;
+}
+
+/* Tip: Subtle Python Yellow / Gold accent */
+.starlight-aside--tip {
+  border-left-color: #ffd43b !important;
+  background-color: rgba(255, 212, 59, 0.08) !important;
+}
+
+.starlight-aside--caution {
+  border-left-color: #f59e0b !important;
+}
+
+.starlight-aside--danger {
+  border-left-color: #ef4444 !important;
+}
+
+/* Light mode component adaptations */
+:root[data-theme="light"] pre {
+  border: 1px solid #e2e8f0 !important;
+  background-color: #f8fafc !important;
+}
+
+:root[data-theme="light"] .mermaid {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+:root[data-theme="light"] .card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+:root[data-theme="light"] .starlight-aside {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-left-width: 3px !important;
+  color: #0f172a !important;
+}
+
+:root[data-theme="light"] .starlight-aside--note {
+  border-left-color: #3776ab !important;
+  background-color: rgba(55, 118, 171, 0.06) !important;
+}
+
+:root[data-theme="light"] .starlight-aside--tip {
+  border-left-color: #d99b00 !important;
+  background-color: rgba(255, 212, 59, 0.1) !important;
+}
