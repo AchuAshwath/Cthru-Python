@@ -1,0 +1,64 @@
+---
+title: Curated Reading List & Inspirations
+description: Seminal talks, articles, books, and source files for mastering Python from first principles.
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+If you want to move beyond superficial tutorials and develop genuine mastery of Python, these are the foundational resources that inspired **Cthru-Python**:
+
+---
+
+## 🎙️ Seminal Talks & Essays
+
+### 1. Facts and Myths About Python Names and Values
+
+- **Author**: Ned Batchelder (PyCon 2015)
+- **Link**: [nedbatchelder.com/text/names.html](https://nedbatchelder.com/text/names.html)
+- **Why it's essential**: The definitive 40-minute explanation of Python's execution model. Completely dismantles the "variables are boxes" analogy and proves that variables are names pointing to values.
+
+### 2. A Python Interpreter Written in Python
+
+- **Author**: Allison Kaptur & Ned Batchelder (_The Architecture of Open Source Applications: 500 Lines or Less_)
+- **Link**: [aosabook.org/en/500L/a-python-interpreter-written-in-python.html](https://aosabook.org/en/500L/a-python-interpreter-written-in-python.html)
+- **Why it's essential**: Walks through **Byterun**, a complete Python virtual machine implemented in under 500 lines of Python. Explains stack frames, bytecode evaluation, and call frames.
+
+### 3. Python Variables Are Pointers (Not Buckets)
+
+- **Author**: Trey Hunner
+- **Link**: [treyhunner.com/2019/04/python-variables-are-pointers/](https://treyhunner.com/2019/04/python-variables-are-pointers/)
+- **Why it's essential**: Clear, visual breakdown of why understanding pointers is necessary to prevent mutability and aliasing bugs in Python.
+
+---
+
+## 📚 Essential Books
+
+<CardGrid>
+  <Card title="Fluent Python (2nd Edition)" icon="open-book">
+    **By Luciano Ramalho** The best intermediate-to-advanced Python book in existence. **Chapter 6:
+    Object References, Mutability, and Recycling** is mandatory reading for understanding identity,
+    equality, and garbage collection.
+  </Card>
+  <Card title="CPython Internals" icon="laptop">
+    **By Anthony Shaw** A hands-on, guided walkthrough of the CPython source code. Teaches you how
+    to navigate the C codebase, modify the interpreter, and understand the compiler.
+  </Card>
+</CardGrid>
+
+---
+
+## 🔍 In-Depth Deep Dives
+
+- **[Python's Innards Series](https://tenthousandmeters.com/tag/python-internals/)** by Yaniv Aknin: A legendary multi-part technical breakdown of how CPython processes code, allocates frames, and handles objects.
+- **[Python Internals Series](https://eli.thegreenplace.net/tag/python-internals)** by Eli Bendersky: Deep dives into the AST compiler, symbol tables, and bytecode disassembler.
+- **[Python Tutor](https://pythontutor.com/)** by Prof. Philip Guo: The pioneering tool that showed how execution graphs and pointer arrows help learners visualize program state.
+
+---
+
+## 🐍 Primary CPython Source Code
+
+You don't have to be afraid of C to inspect CPython's actual source code on GitHub:
+
+- [`Include/object.h`](https://github.com/python/cpython/blob/main/Include/object.h): The definition of `PyObject` and `PyVarObject`.
+- [`Python/ceval.c`](https://github.com/python/cpython/blob/main/Python/ceval.c): The main bytecode evaluation loop (`_PyEval_EvalFrameDefault`).
+- [`Objects/longobject.c`](https://github.com/python/cpython/blob/main/Objects/longobject.c): Python integer implementation and the small int cache (`_PyLong_GetSmallInt_AsRef`).

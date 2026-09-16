@@ -12,7 +12,7 @@ export default defineConfig({
     starlight({
       title: "Cthru-Python",
       description:
-        "See through Python abstractions. Interactive CPython memory & execution visualizer.",
+        "See through Python abstractions. Master Python from hardware memory to CPython internals.",
       customCss: ["./src/styles/global.css"],
       social: [
         { icon: "github", label: "GitHub", href: "https://github.com/AchuAshwath/Cthru-Python" },
@@ -21,13 +21,23 @@ export default defineConfig({
         {
           label: "Start Here",
           items: [
-            { label: "Introduction", link: "/" },
-            { label: "Example Guide", slug: "guides/example" },
+            { label: "The Mental Model", slug: "foundations/mental-model" },
+            { label: "Curated Reading & Influences", slug: "foundations/reading-list" },
           ],
         },
         {
-          label: "Reference",
-          items: [{ autogenerate: { directory: "reference" } }],
+          label: "1. The Hardware & Process",
+          items: [
+            { label: "The Physical Machine & RAM", slug: "foundations/hardware-and-memory" },
+            { label: "Anatomy of a Running Process", slug: "foundations/process-stack-and-heap" },
+          ],
+        },
+        {
+          label: "2. The CPython Engine",
+          items: [
+            { label: "What Actually is Python?", slug: "foundations/what-is-python" },
+            { label: "The Universal PyObject", slug: "foundations/the-pyobject" },
+          ],
         },
       ],
     }),

@@ -1,0 +1,94 @@
+---
+title: Anatomy of a Running Process
+description: How operating systems divide memory into Code, Call Stack, and the Private Heap.
+---
+
+When you double-click an application or run `python script.py` in your terminal, the Operating System (macOS, Linux, or Windows) creates a **Process**.
+
+A process is an isolated sandbox. The OS assigns it a private, virtual memory address space.
+
+---
+
+## 1. The 4 Segments of Process Memory
+
+A running program's memory is organized into distinct zones:
+
+```
+High Memory Addresses (0x7FFF... / 0xFFFF...)
+┌────────────────────────────────────────────────────────┐
+│                   THE CALL STACK                       │
+│  (Grows downwards: function calls, return addresses)    │
+│                        │                               │
+│                        ▼                               │
+│                                                        │
+│                        ▲                               │
+│                        │                               │
+│                    THE HEAP                            │
+│  (Grows upwards: dynamically allocated objects/data)   │
+├────────────────────────────────────────────────────────┤
+│                   BSS & DATA SEGMENTS                  │
+│  (Global variables, static constants)                  │
+├────────────────────────────────────────────────────────┤
+│                   TEXT / CODE SEGMENT                  │
+│  (Read-only compiled machine instructions)             │
+└────────────────────────────────────────────────────────┘
+Low Memory Addresses (0x0000...)
+```
+
+---
+
+## 2. The Call Stack vs. The Heap
+
+To master Python, you must understand the stark difference between **Stack Memory** and **Heap Memory**:
+
+### The Call Stack (Fast, Rigid, Temporary)
+
+- **How it works**: Operates as a Last-In, First-Out (LIFO) stack of plates.
+- **When you call a function**: A new frame is pushed onto the stack. It stores function arguments, local variables, and the return address.
+- **When the function finishes**: The frame is instantly popped off the stack. Its memory is reclaimed immediately with zero overhead.
+- **Limitation**: Size must be known at compile time, and memory cannot outlive the function that created it.
+
+### The Heap (Flexible, Dynamic, Long-Lived)
+
+- **How it works**: A massive open warehouse. If you need 50 bytes or 50 megabytes, you ask the OS memory allocator (`malloc` in C) to find a free space. It hands you back a **pointer address** to that space.
+- **Lifespan**: Data on the heap stays alive until you explicitly free it (or until a Garbage Collector reclaims it).
+- **Limitation**: Slower than stack allocation because finding free blocks takes work and causes fragmentation.
+
+---
+
+## 3. The Big Python Twist: Everything Lives on the Heap
+
+In lower-level languages like C, C++, or Rust, you get to choose between the stack and the heap:
+
+```c
+// In C:
+int x = 42;          // Allocated directly on the fast Call Stack!
+int* arr = malloc(sizeof(int) * 10); // Allocated on the Heap!
+```
+
+In Python, **you do not get this choice**.
+
+**In CPython, EVERY single object—integers, floats, strings, lists, functions, classes—is allocated on the Private Heap.**
+
+```python
+x = 42
+```
+
+What actually happens:
+
+1. CPython's memory allocator allocates a struct on the **Heap** representing the integer `42`.
+2. On the **Call Stack**, inside the current execution frame (`PyFrameObject`), a dictionary key `'x'` stores the **Heap memory address** (the pointer) to `42`.
+
+```
+CALL STACK (Fast Scratchpad)              PRIVATE HEAP (Warehouse)
+┌─────────────────────────┐               ┌───────────────────────────────┐
+│ Frame: <module>         │               │ Address: 0x10a2f0             │
+│                         │               │ Type: int                     │
+│ Variable "x"  ──────────┼──────────────▶│ Value: 42                     │
+│ (holds 0x10a2f0)        │               │ ob_refcnt: 1                  │
+└─────────────────────────┘               └───────────────────────────────┘
+```
+
+This fundamental truth explains why Python is dynamically typed, why variables can point to any type at runtime, and why reference counting is necessary.
+
+Next: **[What Actually is Python?](/foundations/what-is-python)**

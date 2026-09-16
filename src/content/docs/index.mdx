@@ -1,39 +1,41 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: Cthru-Python
+description: "See through Python's abstractions. Master Python from first principles—hardware memory, pointers, and CPython internals."
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: "Stop memorizing syntax tricks. Understand where the bytes live, how CPython runs, and why variables are not boxes."
   image:
     file: ../../assets/houston.webp
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: "Start Learning: The Mental Model"
+      link: /foundations/mental-model/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
+    - text: "View on GitHub"
+      link: https://github.com/AchuAshwath/Cthru-Python
       icon: external
       variant: minimal
 ---
 
 import { Card, CardGrid } from "@astrojs/starlight/components";
 
-## Next steps
+## Why Cthru-Python?
 
 <CardGrid stagger>
-  <Card title="Update content" icon="pencil">
-    Edit `src/content/docs/index.mdx` to see this page change.
+  <Card title="Variables Are Not Boxes" icon="warning">
+    Every intro course tells you variables are containers holding values. In Python, variables are
+    **labels (pointers)** pointing to objects in the heap. Understanding this unlocks mutability,
+    aliasing, and closures.
   </Card>
-  <Card title="Change page layout" icon="document">
-    Delete `template: splash` in `src/content/docs/index.mdx` to display a sidebar on this page.
+  <Card title="Mechanical Empathy" icon="laptop">
+    You don't need to write C to master Python, but understanding the **Call Stack, Private Heap,
+    and bytecode execution loop** makes you write cleaner, faster, bug-free code naturally.
   </Card>
-  <Card title="Add new content" icon="add-document">
-    Add Markdown or MDX files to `src/content/docs` to create new pages.
+  <Card title="The Universal PyObject" icon="puzzle">
+    Discover why an integer takes 28 bytes in Python, what `id()` and `sys.getrefcount()` actually
+    measure, and how the Small Integer Cache works under the hood.
   </Card>
-  <Card title="Configure your site" icon="setting">
-    Edit your `sidebar` and other config in `astro.config.mjs`.
-  </Card>
-  <Card title="Read the docs" icon="open-book">
-    Learn more in [the Starlight Docs](https://starlight.astro.build/).
+  <Card title="Curated from First Principles" icon="open-book">
+    Inspired by seminal engineering talks, books like *Fluent Python* and *CPython Internals*, and
+    actual source code from CPython's GitHub repository.
   </Card>
 </CardGrid>
