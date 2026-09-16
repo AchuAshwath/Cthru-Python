@@ -20,25 +20,29 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: "Start Here",
+          label: "Overview",
           items: [
+            { label: "Introduction", link: "/" },
             { label: "The Mental Model", slug: "foundations/mental-model" },
-            { label: "Curated Reading & Influences", slug: "foundations/reading-list" },
           ],
         },
         {
-          label: "1. The Hardware & Process",
+          label: "Memory & Architecture",
           items: [
-            { label: "The Physical Machine & RAM", slug: "foundations/hardware-and-memory" },
-            { label: "Anatomy of a Running Process", slug: "foundations/process-stack-and-heap" },
+            { label: "Physical Hardware & RAM", slug: "foundations/hardware-and-memory" },
+            { label: "Process Address Space", slug: "foundations/process-stack-and-heap" },
           ],
         },
         {
-          label: "2. The CPython Engine",
+          label: "CPython Internals",
           items: [
-            { label: "What Actually is Python?", slug: "foundations/what-is-python" },
+            { label: "Runtime Architecture", slug: "foundations/what-is-python" },
             { label: "The Universal PyObject", slug: "foundations/the-pyobject" },
           ],
+        },
+        {
+          label: "References",
+          items: [{ label: "Bibliography & Source Files", slug: "foundations/reading-list" }],
         },
       ],
     }),
