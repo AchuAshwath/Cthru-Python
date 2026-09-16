@@ -1,120 +1,121 @@
 ---
-title: What Actually is Python?
-description: Demystifying the snake—source code, bytecode compiler, and the C evaluation loop.
+title: "The CPython Runtime Architecture"
+description: "Compilation pipeline, bytecode generation, PyCodeObject structs, and the virtual machine evaluation loop."
 ---
 
-import { Aside } from "@astrojs/starlight/components";
+To understand CPython's execution behavior, one must distinguish between the Python language specification and its concrete implementation in C.
 
-When people say _"Python is slow"_ or _"Python is dynamically typed"_, what are they actually talking about?
-
-There is an essential distinction that unlocks true understanding:
-**Python is a specification; CPython is a program.**
-
----
-
-## 1. Specification vs. Implementation
-
-- **Python (The Language)**: A set of syntax rules and semantics defined by documentation and Python Enhancement Proposals (PEPs). It is an idea written on paper.
-- **CPython (The Engine)**: The default, official implementation of Python. It is an open-source program written in the **C programming language**. When you type `python` in your terminal, you are launching an executable binary compiled from C source files.
-
-_(There are other implementations: PyPy uses a Just-In-Time compiler; Jython runs on the Java JVM; MicroPython runs on microcontrollers. But 99% of the world uses CPython)._
+- **Python (The Specification)**: The language syntax and runtime semantics documented in the Python Language Reference and formal Python Enhancement Proposals (PEPs).
+- **CPython (The Runtime)**: The reference implementation authored in C. CPython is an executable binary compiled from source files located in the `cpython` repository.
 
 ---
 
-## 2. The 4-Stage Journey of Your Code
+## 1. The Compilation and Execution Pipeline
 
-When you run `python main.py`, your code does not get executed line-by-line as raw text. It goes through four distinct stages:
+CPython executes Python source code through a multi-phase translation pipeline:
 
 ```mermaid
 flowchart TD
-    S1["1. Source Code (Text)<br/>x = 10 + 20"]
-    S2["2. Tokenizer & Parser<br/>Abstract Syntax Tree (AST)"]
-    S3["3. Bytecode Compiler<br/>PyCodeObject (.pyc)<br/>LOAD_CONST, BINARY_OP, STORE_FAST"]
-    S4["4. CPython Virtual Machine (ceval.c)<br/>while(1) { switch(*opcode) }"]
-    CPU["5. Hardware Execution<br/>CPU Registers & RAM"]
-
-    S1 --> S2 --> S3 --> S4 --> CPU
-
-    style S1 fill:#334155,stroke:#64748b,stroke-width:1px,color:#fff
-    style S2 fill:#334155,stroke:#64748b,stroke-width:1px,color:#fff
-    style S3 fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#fff
-    style S4 fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
-    style CPU fill:#4c1d95,stroke:#8b5cf6,stroke-width:2px,color:#fff
+    Source["1. Source Code (.py)"] --> Lexer["2. Tokenizer & Parser"]
+    Lexer --> AST["3. Abstract Syntax Tree (AST)"]
+    AST --> Compiler["4. Bytecode Compiler"]
+    Compiler --> CodeObj["5. Code Object (PyCodeObject)"]
+    CodeObj --> VM["6. Virtual Machine Evaluation Loop (ceval.c)"]
+    VM --> Hardware["7. CPU Execution & Memory Mutation"]
 ```
+
+### Phase 1: Lexical Analysis and Parsing
+
+The tokenizer converts source text into a stream of lexical tokens. The parser constructs an Abstract Syntax Tree (AST) representing the syntactic structure of the program in accordance with Python's formal grammar.
+
+### Phase 2: Bytecode Compilation
+
+The compiler traverses the AST, resolves variable scopes using symbol tables, and generates instructions for an idealized stack machine: **Python Bytecode**. The resulting bytecode, along with metadata (constants, variable names, line number mappings), is packaged into a **`PyCodeObject`**.
 
 ---
 
-## 3. Bytecode: The Secret Bridge
+## 2. Bytecode Inspection
 
-Python is neither purely "compiled" like C/Rust, nor purely "interpreted" like early Bash scripts. **It is a bytecode-interpreted language.**
+Bytecode is a sequence of 2-byte instructions (in Python 3.11+, each instruction consists of a 1-byte opcode and a 1-byte argument).
 
-Bytecode is an intermediate, machine-independent set of instructions designed for an imaginary software CPU called the **Python Virtual Machine (PVM)**.
-
-You can inspect Python's bytecode right now using the built-in `dis` (disassembler) module:
+The standard library `dis` module exposes this representation:
 
 ```python
 import dis
 
-def add_numbers():
-    x = 10
-    y = 20
-    return x + y
+def calculate(x, y):
+    return x + y * 2
 
-dis.dis(add_numbers)
+dis.dis(calculate)
 ```
 
 Output:
 
 ```text
-  2           0 LOAD_CONST               1 (10)
-              2 STORE_FAST               0 (x)
+  2           0 RESUME                   0
 
-  3           4 LOAD_CONST               2 (20)
-              6 STORE_FAST               1 (y)
-
-  4           8 LOAD_FAST                0 (x)
-             10 LOAD_FAST                1 (y)
+  3           2 LOAD_FAST                0 (x)
+              4 LOAD_FAST                1 (y)
+              6 LOAD_CONST               1 (2)
+              8 BINARY_OP                5 (*)
              12 BINARY_OP                0 (+)
-             14 RETURN_VALUE
+             16 RETURN_VALUE
 ```
 
-Look closely at those instructions:
+### Stack Machine Execution
 
-- `LOAD_CONST`: Pushes a constant object onto the evaluation value stack.
-- `STORE_FAST`: Stores the top pointer from the stack into local variable slot `0` (`x`).
-- `BINARY_OP`: Calls CPython's C addition routine on the two top objects.
-- `RETURN_VALUE`: Pops the result and returns it to the caller.
+Unlike register-based CPUs (such as x86-64), CPython's virtual machine is a **stack machine**:
+
+1. `LOAD_FAST 0`: Pushes the pointer corresponding to parameter `x` onto the evaluation stack.
+2. `LOAD_FAST 1`: Pushes the pointer corresponding to parameter `y` onto the evaluation stack.
+3. `LOAD_CONST 1`: Pushes the pointer to integer constant `2` onto the evaluation stack.
+4. `BINARY_OP 5 (*)`: Pops `2` and `y`, executes multiplication, and pushes the resulting `PyObject*` back onto the stack.
+5. `BINARY_OP 0 (+)`: Pops the multiplication result and `x`, executes addition, and pushes the result.
+6. `RETURN_VALUE`: Pops the top element and returns it to the caller's frame.
 
 ---
 
-## 4. The Virtual Machine Loop (`ceval.c`)
+## 3. The Evaluation Loop: `ceval.c`
 
-At the very heart of CPython is a single C file: [`Python/ceval.c`](https://github.com/python/cpython/blob/main/Python/ceval.c).
+The execution engine resides in [`Python/ceval.c`](https://github.com/python/cpython/blob/main/Python/ceval.c) inside the core interpreter function `_PyEval_EvalFrameDefault()`.
 
-Inside it sits a giant C function containing an infinite loop and a `switch` statement:
+In simplified terms, the interpreter loop operates as follows:
 
 ```c
-// Conceptual view of Python's main evaluation loop in C:
-for (;;) {
-    opcode = *next_instruction++;
-    switch (opcode) {
-        case LOAD_FAST:
-            // Fetch pointer from local frame array
-            PUSH(GETLOCAL(oparg));
-            DISPATCH();
+// Simplified representation of _PyEval_EvalFrameDefault in Python/ceval.c
+PyObject* _PyEval_EvalFrameDefault(PyThreadState *tstate, PyFrameObject *f, int throwflag) {
+    _Py_CODEUNIT *first_instr = f->f_code->co_firstlineno;
+    _Py_CODEUNIT *next_instr = first_instr;
+    PyObject **stack_pointer = f->f_valuestack;
 
-        case STORE_FAST:
-            // Pop pointer and save to local frame array
-            SETLOCAL(oparg, POP());
-            DISPATCH();
+    for (;;) {
+        _Py_CODEUNIT word = *next_instr++;
+        int opcode = _Py_OPCODE(word);
+        int oparg = _Py_OPARG(word);
 
-        case BINARY_OP:
-            // Pop two PyObjects and execute their C type's add method
-            ...
+        switch (opcode) {
+            case LOAD_FAST: {
+                PyObject *value = f->f_localsplus[oparg];
+                Py_INCREF(value);
+                *stack_pointer++ = value;
+                DISPATCH();
+            }
+            case BINARY_OP: {
+                PyObject *right = *--stack_pointer;
+                PyObject *left = *--stack_pointer;
+                PyObject *res = evaluate_binary_op(left, right, oparg);
+                *stack_pointer++ = res;
+                DISPATCH();
+            }
+            case RETURN_VALUE: {
+                PyObject *retval = *--stack_pointer;
+                return retval;
+            }
+        }
     }
 }
 ```
 
-Every single time your Python program runs, a real compiled C program is stepping through these bytecode numbers, manipulating pointers on your computer's RAM.
+Every Python construct maps directly to these C operations and macro dispatches.
 
-Now that we know who is running the show, let's meet the most fundamental citizen in Python's universe: **[The Universal PyObject](/foundations/the-pyobject/)**.
+Next: **[Object Model & Memory Layout (PyObject)](/foundations/the-pyobject/)**.

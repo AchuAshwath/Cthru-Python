@@ -1,97 +1,89 @@
 ---
-title: Anatomy of a Running Process
-description: How operating systems divide memory into Code, Call Stack, and the Private Heap.
+title: "Process Address Space: Stack vs. Heap"
+description: "Virtual memory layout, call stack semantics, dynamic heap allocation, and CPython's memory distribution."
 ---
 
-When you double-click an application or run `python script.py` in your terminal, the Operating System (macOS, Linux, or Windows) creates a **Process**.
-
-A process is an isolated sandbox. The OS assigns it a private, virtual memory address space.
+When an operating system initializes an executable, it instantiates a **Process** and assigns it an isolated virtual memory address space. Understanding how this space is segmented is foundational to understanding runtime behavior.
 
 ---
 
-## 1. The 4 Segments of Process Memory
+## 1. Virtual Address Space Segmentation
 
-A running program's memory is organized into distinct zones:
+A 64-bit user-space process is structured into standardized functional segments:
 
 ```mermaid
 flowchart TD
-    subgraph ProcessMemory["Process Virtual Memory (64-Bit Space)"]
+    subgraph Memory["Process Virtual Address Space"]
         direction TB
-        Stack["THE CALL STACK (High Memory: 0x7FFF...)<br/>• Function call frames (PyFrameObject)<br/>• Fast, rigid, LIFO structure<br/>⬇️ Grows Downwards"]
-        Gap["[ Dynamic Memory Free Gap ]"]
-        Heap["THE PRIVATE HEAP<br/>• Dynamically allocated objects (All PyObjects)<br/>• Flexible lifetimes, managed by allocator<br/>⬆️ Grows Upwards"]
-        Data["DATA & BSS SEGMENT<br/>• Global variables, static constants, string table"]
-        Text["TEXT / CODE SEGMENT (Low Memory: 0x0000...)<br/>• Read-only compiled machine instructions of CPython binary"]
+        Stack["The Call Stack (High Memory Addresses)<br/>LIFO stack frames, automatic lifetime, fast bump-pointer allocation"]
+        Unmapped["Unmapped Address Space"]
+        Heap["The Private Heap<br/>Dynamic allocation via malloc / brk / mmap, variable object lifespans"]
+        BSS["BSS & Initialized Data Segments<br/>Global state, static variables, interned string tables"]
+        Text["Text / Code Segment (Low Memory Addresses)<br/>Read-only executable machine instructions"]
     end
 
-    Stack --- Gap --- Heap --- Data --- Text
-
-    style Stack fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#fff
-    style Heap fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
-    style Data fill:#334155,stroke:#64748b,stroke-width:1px,color:#fff
-    style Text fill:#1e293b,stroke:#475569,stroke-width:1px,color:#fff
+    Stack --- Unmapped --- Heap --- BSS --- Text
 ```
 
 ---
 
-## 2. The Call Stack vs. The Heap
+## 2. Allocation Characteristics: Stack vs. Heap
 
-To master Python, you must understand the stark difference between **Stack Memory** and **Heap Memory**:
+The operating system provides two primary mechanisms for managing working memory during execution:
 
-### The Call Stack (Fast, Rigid, Temporary)
-
-- **How it works**: Operates as a Last-In, First-Out (LIFO) stack of plates.
-- **When you call a function**: A new frame is pushed onto the stack. It stores function arguments, local variables, and the return address.
-- **When the function finishes**: The frame is instantly popped off the stack. Its memory is reclaimed immediately with zero overhead.
-- **Limitation**: Size must be known at compile time, and memory cannot outlive the function that created it.
-
-### The Heap (Flexible, Dynamic, Long-Lived)
-
-- **How it works**: A massive open warehouse. If you need 50 bytes or 50 megabytes, you ask the OS memory allocator (`malloc` in C) to find a free space. It hands you back a **pointer address** to that space.
-- **Lifespan**: Data on the heap stays alive until you explicitly free it (or until a Garbage Collector reclaims it).
-- **Limitation**: Slower than stack allocation because finding free blocks takes work and causes fragmentation.
+| Characteristic           | The Call Stack                                  | The Heap                                                      |
+| :----------------------- | :---------------------------------------------- | :------------------------------------------------------------ |
+| **Allocation Pattern**   | Contiguous LIFO (Last-In, First-Out)            | Arbitrary dynamic allocation and deallocation                 |
+| **Allocation Mechanism** | Stack pointer register decrement (`sub rsp, N`) | Memory allocator traversal (`malloc`, `pymalloc`, free lists) |
+| **Performance**          | O(1) allocation and deallocation                | O(1) to O(N) depending on fragmentation and allocator pools   |
+| **Object Lifetime**      | Strictly bounded by function scope              | Explicitly managed; persists across scopes until freed        |
+| **Size Constraint**      | Fixed limit (commonly 8 MiB on macOS/Linux)     | Bounded only by available virtual memory and swap             |
 
 ---
 
-## 3. The Big Python Twist: Everything Lives on the Heap
+## 3. CPython's Memory Architecture
 
-In lower-level languages like C, C++, or Rust, you get to choose between the stack and the heap:
+In compiled systems languages such as C, C++, and Rust, primitive variables are allocated directly within the call stack's active frame:
 
 ```c
-// In C:
-int x = 42;          // Allocated directly on the fast Call Stack!
-int* arr = malloc(sizeof(int) * 10); // Allocated on the Heap!
+// C example:
+void compute(void) {
+    int x = 42;  // 4 bytes allocated directly on the call stack
+} // 'x' deallocated immediately upon function return
 ```
 
-In Python, **you do not get this choice**.
+### The CPython Paradigm Shift
 
-**In CPython, EVERY single object—integers, floats, strings, lists, functions, classes—is allocated on the Private Heap.**
+CPython diverges fundamentally from this model:
+
+**In CPython, all Python data objects reside exclusively on the Private Heap.**
 
 ```python
 x = 42
 ```
 
-What actually happens:
+When this statement is evaluated:
 
-1. CPython's memory allocator allocates a struct on the **Heap** representing the integer `42`.
-2. On the **Call Stack**, inside the current execution frame (`PyFrameObject`), a dictionary key `'x'` stores the **Heap memory address** (the pointer) to `42`.
+1. CPython's small-object allocator allocates a `PyLongObject` struct within the **Heap**.
+2. Within the active **Stack Frame** (`PyFrameObject`), a local variable slot stores the 8-byte **pointer address** to that heap struct.
 
 ```mermaid
 flowchart LR
-    subgraph Stack["CALL STACK (Fast Scratchpad)"]
+    subgraph Stack["Call Stack Space"]
         Frame["PyFrameObject: <module><br/>f_locals: {'x': 0x10a2f0}"]
     end
 
-    subgraph Heap["PRIVATE HEAP (Warehouse)"]
-        IntObj["PyLongObject<br/>Address: 0x10a2f0<br/>Type: int<br/>Value: 42<br/>ob_refcnt: 1"]
+    subgraph Heap["CPython Private Heap"]
+        PyLong["PyLongObject at 0x10a2f0<br/>ob_refcnt: 1<br/>ob_type: &PyLong_Type<br/>value: 42"]
     end
 
-    Frame -->|points to 0x10a2f0| IntObj
-
-    style Frame fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff
-    style IntObj fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#fff
+    Frame -->|0x10a2f0| PyLong
 ```
 
-This fundamental truth explains why Python is dynamically typed, why variables can point to any type at runtime, and why reference counting is necessary.
+Because variables store references rather than inline data:
 
-Next: **[What Actually is Python?](/foundations/what-is-python/)**
+- Rebinding a variable (`x = "text"`) replaces an 8-byte pointer; it does not overwrite a fixed memory slot.
+- Function calls pass copies of pointer values (yielding "pass-by-assignment" semantics).
+- Memory reclamation requires automated tracking mechanisms (Reference Counting and Generational Garbage Collection).
+
+Next: **[The CPython Runtime Architecture](/foundations/what-is-python/)**.

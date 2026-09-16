@@ -1,74 +1,70 @@
 ---
-title: Cthru-Python
-description: "See through Python's abstractions. The missing mechanical empathy guide for Python developers."
-template: splash
-hero:
-  tagline: "They told you Python has no pointers. They lied. Master CPython memory, stack frames, and the private heap from first principles."
-  image:
-    file: ../../../public/cthru-hero.svg
-  actions:
-    - text: "Start Reading: The Mental Model"
-      link: /foundations/mental-model/
-      icon: right-arrow
-    - text: "GitHub Repository"
-      link: https://github.com/AchuAshwath/Cthru-Python
-      icon: external
-      variant: minimal
+title: "Cthru-Python Documentation"
+description: "A technical reference and guide to CPython internal architecture, memory layout, and execution mechanics."
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+**Cthru-Python** is an open-source technical reference and visual execution guide dedicated to the internal mechanics of CPython—the reference implementation of the Python programming language.
 
-## The Bug That Breaks Every Beginner
+Most programming documentation explains _what_ language constructs do syntactically. This guide explains _how_ the CPython runtime implements them at the level of operating system processes, memory layouts, reference counts, and bytecode instructions.
 
-Ask someone who has been writing Python for six months what this does:
+---
+
+## The Motivation
+
+Python is often taught through high-level analogies that obscure runtime behavior:
+
+- Variables are introduced as "named containers" rather than pointers in a local namespace.
+- Function argument evaluation is described using ambiguous terminology ("pass-by-object-reference") without referencing pointer dereferencing.
+- Mutability is taught as an arbitrary set of rules to memorize rather than an intrinsic consequence of in-place heap allocation.
+
+These abstractions conceal the underlying systems architecture:
 
 ```python
 a = [1, 2, 3]
 b = a
 b.append(4)
 
-print(a)
+print(a)  # Prints [1, 2, 3, 4]
 ```
 
-Almost everyone who was taught that _"a variable is a box containing a value"_ guesses `[1, 2, 3]`.  
-When the terminal prints `[1, 2, 3, 4]`, they memorize a rule: _"Lists are mutable, numbers are immutable."_
-
-That isn't an explanation—it's a coping mechanism.
-
-### What Actually Happened in RAM:
-
-1. `[1, 2, 3]` is allocated at heap address `0x10f440`.
-2. `a` is an 8-byte pointer holding the address `0x10f440`.
-3. `b = a` copies the **address**, not the list. Now both `a` and `b` point to `0x10f440`.
-4. `b.append(4)` modifies the memory block at `0x10f440`.
-5. Printing `a` reads `0x10f440`. Of course it shows `4`—there was only ever **one list** in memory.
+When variables are understood as 8-byte pointer addresses stored within a call frame's `f_locals` array, and lists are understood as dynamically allocated `PyListObject` structs residing on the private heap, the behavior of the snippet above ceases to be a language quirk—it becomes a necessary consequence of memory addressing.
 
 ---
 
-## Why We Built This
+## Architectural Scope
 
-<CardGrid>
-  <Card title="Kill the 'Box' Metaphor">
-    Variables aren't cardboard boxes. They are pointers in a stack frame dictionary (`f_locals`).
-    Once you see Python this way, mutability, aliasing, and closures make complete sense.
-  </Card>
-  <Card title="Mechanical Empathy">
-    Formula 1 drivers don't need to rebuild transmissions, but they know how a gearbox works so they
-    don't shred it. Developers who understand CPython write faster, cleaner code and debug 10x
-    faster.
-  </Card>
-  <Card title="Real CPython Internals">
-    Inspect real `PyObject` headers (`ob_refcnt`, `ob_type`), real memory addresses with `id()`,
-    real bytecode with `dis`, and the actual C loops inside `ceval.c`.
-  </Card>
-  <Card title="No Fluff, No Filler">
-    Curated from seminal talks by Ned Batchelder, books like *Fluent Python*, and the CPython source
-    code. Every concept has runnable code you can verify in your own terminal.
-  </Card>
-</CardGrid>
+This documentation examines CPython across four interdependent layers:
+
+| Layer                       | Focus Areas                                                  | Key Components                                        |
+| :-------------------------- | :----------------------------------------------------------- | :---------------------------------------------------- |
+| **0. Hardware & Process**   | Memory addressing, 64-bit word size, virtual memory segments | CPU Registers, RAM, Process Call Stack, Process Heap  |
+| **1. CPython Object Model** | Struct definitions, memory overhead, allocation              | `PyObject`, `PyVarObject`, `ob_refcnt`, `ob_type`     |
+| **2. Compilation Pipeline** | Source translation, symbol tables, code generation           | Tokenizer, Abstract Syntax Tree (AST), `PyCodeObject` |
+| **3. Virtual Machine**      | Bytecode execution loop, frame evaluation, scoping           | `ceval.c`, `PyFrameObject`, value evaluation stack    |
 
 ---
 
-## Where to Begin
+## Curriculum Structure
 
-Start with **[The Mental Model](/foundations/mental-model/)** to unlearn the bad habits from intro tutorials, or browse the **[Curated Reading List](/foundations/reading-list/)** for the engineering talks and papers that inspired this project.
+The foundational material is organized into progressive chapters:
+
+### Part 1: Systems Foundation
+
+1. **[The Execution & Memory Model](/foundations/mental-model/)**  
+   Re-evaluating variable semantics, name binding, and object identity.
+2. **[Hardware Architecture & Memory Addressing](/foundations/hardware-and-memory/)**  
+   Physical RAM addressing, 64-bit pointers, and CPU instruction pipelines.
+3. **[Process Address Space: Stack vs. Heap](/foundations/process-stack-and-heap/)**  
+   Virtual memory segmentation and CPython's heap-exclusive allocation model.
+
+### Part 2: The CPython Engine
+
+4. **[The CPython Runtime Architecture](/foundations/what-is-python/)**  
+   The compilation pipeline from source text to the `ceval.c` evaluation loop.
+5. **[Object Model & Memory Layout (PyObject)](/foundations/the-pyobject/)**  
+   The 16-byte object header, reference counting, and singleton optimizations.
+
+### References
+
+6. **[Bibliography & Primary References](/foundations/reading-list/)**  
+   Curated papers, books, and direct links to CPython source files.

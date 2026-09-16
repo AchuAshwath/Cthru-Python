@@ -1,98 +1,92 @@
 ---
-title: The Physical Machine & RAM
-description: How memory and CPUs actually work before programming languages exist.
+title: "Hardware Architecture & Memory Addressing"
+description: "Physical memory addressing, word alignment, and CPU instruction execution fundamentals."
 ---
 
-To understand where a Python object lives, we first have to strip away all software abstractions and look at the bare metal: **the CPU and RAM**.
+Before examining runtime abstractions, it is necessary to establish the physical constraints imposed by the underlying hardware architecture: the Central Processing Unit (CPU) and Random Access Memory (RAM).
 
 ---
 
-## 1. RAM: The Street of Numbered Mailboxes
+## 1. Linear Memory Addressing
 
-Imagine a single street that stretches for miles. On one side of the street are billions of tiny mailboxes, numbered sequentially from `0` to `17,179,869,183` (for a 16 GB RAM computer):
+Physical memory is organized as a contiguous, one-dimensional array of 8-bit storage units (bytes). Each byte is assigned a unique numerical index designated as its **memory address**.
 
 ```mermaid
 flowchart LR
-    M0["Address 0x0000<br/>Byte 0: 01001010"]
-    M1["Address 0x0001<br/>Byte 1: 11100001"]
-    M2["Address 0x0002<br/>Byte 2: 00000000"]
-    M3["Address 0x0003<br/>Byte 3: 11111111"]
-    M4["Address 0x0004<br/>Byte 4: 00101011"]
+    B0["0x0000<br/>Byte 0"]
+    B1["0x0001<br/>Byte 1"]
+    B2["0x0002<br/>Byte 2"]
+    B3["0x0003<br/>Byte 3"]
+    B4["0x0004<br/>Byte 4"]
 
-    M0 --- M1 --- M2 --- M3 --- M4
+    B0 --- B1 --- B2 --- B3 --- B4
 ```
 
-Each mailbox holds exactly **8 bits (1 Byte)**.
+A byte can represent values in the range `[0, 255]`. Values requiring greater precision (such as 32-bit integers or 64-bit pointers) are composed of multiple contiguous bytes stored in accordance with the host architecture's endianness (typically little-endian on x86-64 and ARM64).
 
-- A byte can store any integer from `0` to `255` (or an ASCII character).
-- The number painted on the outside of the mailbox is its **Memory Address**.
+### Pointers Defined
 
-### What is a Pointer?
+A **pointer** is a numerical value that corresponds to a specific memory address. In a compiled language like C, declaring a pointer allocates storage capable of holding a memory address:
 
-A **pointer** is simply a memory address. It is nothing more than the number of a mailbox.
-
-If data is stored at mailbox `0x10a4b0`, then any variable holding the number `0x10a4b0` is a "pointer" to that data. That's it. There is no magic to pointers.
-
----
-
-## 2. 32-Bit vs. 64-Bit: How Long is an Address?
-
-You often hear that modern operating systems and Python are **64-bit**. What does that mean?
-
-- In a **32-bit CPU**, memory addresses are 32 bits long (4 bytes). The CPU can address up to 2^32 bytes (~4 GB) of RAM.
-- In a **64-bit CPU**, memory addresses are 64 bits long (8 bytes). The CPU can address up to 2^64 bytes (~16 Exabytes).
-
-> **Why this matters for Python:**  
-> On your 64-bit Mac or Linux laptop, every pointer in CPython takes up **8 bytes**. When you create a variable or a list of 1,000 items, Python is allocating arrays of 8-byte addresses.
+```c
+uint64_t val = 42;
+uint64_t* ptr = &val;  // 'ptr' stores the numerical memory address of 'val'
+```
 
 ---
 
-## 3. The CPU: The Fast Calculator
+## 2. Address Bus Width and Word Size
 
-The Central Processing Unit (CPU) doesn't understand Python, English, or mathematics. It understands a tiny set of primitive operations wired into silicon:
+The architecture of modern systems is defined primarily by its word size and address bus width:
+
+| Architecture               | Address Bus Width                     | Pointer Size | Addressable Virtual Address Space |
+| :------------------------- | :------------------------------------ | :----------- | :-------------------------------- |
+| **32-bit (x86, ARM32)**    | 32 bits                               | 4 bytes      | 2^32 bytes (~4 GiB)               |
+| **64-bit (x86-64, ARM64)** | 64 bits (typically 48-57 bits active) | 8 bytes      | 2^64 bytes (~16 EiB)              |
+
+### Memory Overhead in 64-bit Systems
+
+Because pointers in a 64-bit environment occupy **8 bytes**, pointer-dense runtimes like CPython incur measurable memory overhead:
+
+- Every object reference (such as each element of a list, or each attribute lookup) involves dereferencing an 8-byte address.
+- Arrays of pointers scale at 8 bytes per slot, excluding container metadata.
+
+---
+
+## 3. CPU Execution Pipeline
+
+The CPU operates as an automated state machine executing machine instructions retrieved from memory.
 
 ```mermaid
 flowchart TD
     subgraph CPU["Central Processing Unit (CPU)"]
-        PC["Program Counter (PC)<br/>Holds address of NEXT instruction"]
-        Regs["Registers (RAX, RBX, RSP)<br/>Ultra-fast internal scratchpad"]
-        ALU["Arithmetic Logic Unit (ALU)<br/>Executes electrical math (+, -, AND, OR)"]
+        PC["Program Counter (PC)<br/>Holds address of current instruction"]
+        Regs["Registers (General Purpose: RAX, RDI, etc.)"]
+        ALU["Arithmetic Logic Unit (ALU)"]
     end
 
-    subgraph Bus["System Address & Data Bus"]
-        DataLines["High-speed copper interconnect"]
+    subgraph Bus["Memory Bus"]
+        AddressBus["Address & Data Bus"]
     end
 
-    subgraph Memory["RAM (System Memory)"]
-        Instructions["0x1000: Machine Code Instructions"]
-        DataBytes["0x8000: Data & Variables"]
+    subgraph RAM["Physical Memory (RAM)"]
+        Instructions["Code Segment (Opcodes)"]
+        DataSpace["Data Segment & Heap"]
     end
 
-    PC -->|1. Fetch Address| DataLines
-    DataLines -->|2. Return Opcode| Regs
-    Regs -->|3. Calculate| ALU
-    ALU -->|4. Store Result| DataLines
-    DataLines -->|5. Write Back| DataBytes
+    PC -->|Instruction Fetch| AddressBus
+    AddressBus -->|Machine Code Bytes| Regs
+    Regs -->|Operands| ALU
+    ALU -->|Writeback| AddressBus
+    AddressBus -->|State Persistence| DataSpace
 ```
 
-### The Fetch-Decode-Execute Cycle
+### The Instruction Cycle
 
-1. **Fetch**: Read the byte at the address pointed to by the Program Counter.
-2. **Decode**: What does this instruction mean? (e.g. `0x48 0x01 0xD8` means `ADD RAX, RBX`).
-3. **Execute**: Perform the electrical arithmetic and advance the Program Counter.
+1. **Instruction Fetch**: The CPU retrieves the instruction byte sequence from the address designated by the Program Counter (PC).
+2. **Instruction Decode**: The instruction decoder resolves the opcode and operand identifiers.
+3. **Execute**: The Arithmetic Logic Unit (ALU) or control unit executes the operation, updating register state and advancing the Program Counter.
 
-The CPU runs this loop **billions of times per second**.
+Higher-level runtimes like CPython do not bypass this cycle; rather, CPython is itself an executable compiled into machine instructions that the CPU processes according to these hardware rules.
 
----
-
-## 4. Why We Need Abstractions
-
-Machine code (raw bytes fed to a CPU) is:
-
-- **Painful to write**: You must manually juggle CPU registers.
-- **Hardware-locked**: Code for an Intel x86 chip will not run on an Apple Silicon ARM chip.
-- **Dangerous**: Writing to the wrong memory address crashes the entire operating system.
-
-High-level programming languages exist to let humans express logic without micromanaging electrical registers. But under all the syntax, **the hardware still only knows addresses and bytes**.
-
-Next, let's see what happens when the operating system gives a running program its own sandbox: **[The Anatomy of a Running Process](/foundations/process-stack-and-heap/)**.
+Next: **[Process Address Space: Stack vs. Heap](/foundations/process-stack-and-heap/)**.
