@@ -10,31 +10,31 @@ To understand CPython's execution behavior, one must distinguish between the Pyt
 
 ---
 
-## 1. The Compilation and Execution Pipeline
+## The Compilation and Execution Pipeline
 
 CPython executes Python source code through a multi-phase translation pipeline:
 
 ```mermaid
 flowchart TD
-    Source["1. Source Code (.py)"] --> Lexer["2. Tokenizer & Parser"]
-    Lexer --> AST["3. Abstract Syntax Tree (AST)"]
-    AST --> Compiler["4. Bytecode Compiler"]
-    Compiler --> CodeObj["5. Code Object (PyCodeObject)"]
-    CodeObj --> VM["6. Virtual Machine Evaluation Loop (ceval.c)"]
-    VM --> Hardware["7. CPU Execution & Memory Mutation"]
+    Source["Source Code (.py)"] --> Lexer["Tokenizer & Parser"]
+    Lexer --> AST["Abstract Syntax Tree (AST)"]
+    AST --> Compiler["Bytecode Compiler"]
+    Compiler --> CodeObj["Code Object (PyCodeObject)"]
+    CodeObj --> VM["Virtual Machine Evaluation Loop (ceval.c)"]
+    VM --> Hardware["CPU Execution & Memory Mutation"]
 ```
 
-### Phase 1: Lexical Analysis and Parsing
+### Lexical Analysis and Parsing
 
 The tokenizer converts source text into a stream of lexical tokens. The parser constructs an Abstract Syntax Tree (AST) representing the syntactic structure of the program in accordance with Python's formal grammar.
 
-### Phase 2: Bytecode Compilation
+### Bytecode Compilation
 
 The compiler traverses the AST, resolves variable scopes using symbol tables, and generates instructions for an idealized stack machine: **Python Bytecode**. The resulting bytecode, along with metadata (constants, variable names, line number mappings), is packaged into a **`PyCodeObject`**.
 
 ---
 
-## 2. Bytecode Inspection
+## Bytecode Inspection
 
 Bytecode is a sequence of 2-byte instructions (in Python 3.11+, each instruction consists of a 1-byte opcode and a 1-byte argument).
 
@@ -66,16 +66,16 @@ Output:
 
 Unlike register-based CPUs (such as x86-64), CPython's virtual machine is a **stack machine**:
 
-1. `LOAD_FAST 0`: Pushes the pointer corresponding to parameter `x` onto the evaluation stack.
-2. `LOAD_FAST 1`: Pushes the pointer corresponding to parameter `y` onto the evaluation stack.
-3. `LOAD_CONST 1`: Pushes the pointer to integer constant `2` onto the evaluation stack.
-4. `BINARY_OP 5 (*)`: Pops `2` and `y`, executes multiplication, and pushes the resulting `PyObject*` back onto the stack.
-5. `BINARY_OP 0 (+)`: Pops the multiplication result and `x`, executes addition, and pushes the result.
-6. `RETURN_VALUE`: Pops the top element and returns it to the caller's frame.
+- `LOAD_FAST 0`: Pushes the pointer corresponding to parameter `x` onto the evaluation stack.
+- `LOAD_FAST 1`: Pushes the pointer corresponding to parameter `y` onto the evaluation stack.
+- `LOAD_CONST 1`: Pushes the pointer to integer constant `2` onto the evaluation stack.
+- `BINARY_OP 5 (*)`: Pops `2` and `y`, executes multiplication, and pushes the resulting `PyObject*` back onto the stack.
+- `BINARY_OP 0 (+)`: Pops the multiplication result and `x`, executes addition, and pushes the result.
+- `RETURN_VALUE`: Pops the top element and returns it to the caller's frame.
 
 ---
 
-## 3. The Evaluation Loop: `ceval.c`
+## The Evaluation Loop: ceval.c
 
 The execution engine resides in [`Python/ceval.c`](https://github.com/python/cpython/blob/main/Python/ceval.c) inside the core interpreter function `_PyEval_EvalFrameDefault()`.
 

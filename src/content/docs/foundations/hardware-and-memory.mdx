@@ -3,46 +3,46 @@ title: "Hardware Architecture & Memory Addressing"
 description: "Physical memory addressing, word alignment, and CPU instruction execution fundamentals."
 ---
 
-Before examining runtime abstractions, it is necessary to establish the physical constraints imposed by the underlying hardware architecture: the Central Processing Unit (CPU) and Random Access Memory (RAM).
+Before examining runtime abstractions, we must establish the physical constraints imposed by the hardware: the Central Processing Unit (CPU) and Random Access Memory (RAM).
 
 ---
 
-## 1. Linear Memory Addressing
+## Linear Memory Addressing
 
 Physical memory is organized as a contiguous, one-dimensional array of 8-bit storage units (bytes). Each byte is assigned a unique numerical index designated as its **memory address**.
 
 ```mermaid
 flowchart LR
-    B0["0x0000<br/>Byte 0"]
-    B1["0x0001<br/>Byte 1"]
-    B2["0x0002<br/>Byte 2"]
-    B3["0x0003<br/>Byte 3"]
-    B4["0x0004<br/>Byte 4"]
+    B0["0x0000: Byte 0"]
+    B1["0x0001: Byte 1"]
+    B2["0x0002: Byte 2"]
+    B3["0x0003: Byte 3"]
+    B4["0x0004: Byte 4"]
 
     B0 --- B1 --- B2 --- B3 --- B4
 ```
 
-A byte can represent values in the range `[0, 255]`. Values requiring greater precision (such as 32-bit integers or 64-bit pointers) are composed of multiple contiguous bytes stored in accordance with the host architecture's endianness (typically little-endian on x86-64 and ARM64).
+A byte can represent values in the range `[0, 255]`. Values requiring greater precision (such as 32-bit integers or 64-bit pointers) are composed of multiple contiguous bytes stored according to the host architecture's endianness (typically little-endian on x86-64 and ARM64).
 
 ### Pointers Defined
 
-A **pointer** is a numerical value that corresponds to a specific memory address. In a compiled language like C, declaring a pointer allocates storage capable of holding a memory address:
+A **pointer** is simply a numerical value that corresponds to a memory address. In compiled systems languages like C, declaring a pointer allocates storage capable of holding an address:
 
 ```c
 uint64_t val = 42;
-uint64_t* ptr = &val;  // 'ptr' stores the numerical memory address of 'val'
+uint64_t* ptr = &val;  /* 'ptr' holds the memory address of 'val' */
 ```
 
 ---
 
-## 2. Address Bus Width and Word Size
+## Address Bus Width and Word Size
 
-The architecture of modern systems is defined primarily by its word size and address bus width:
+The architecture of modern systems is defined primarily by word size and address bus width:
 
-| Architecture               | Address Bus Width                     | Pointer Size | Addressable Virtual Address Space |
-| :------------------------- | :------------------------------------ | :----------- | :-------------------------------- |
-| **32-bit (x86, ARM32)**    | 32 bits                               | 4 bytes      | 2^32 bytes (~4 GiB)               |
-| **64-bit (x86-64, ARM64)** | 64 bits (typically 48-57 bits active) | 8 bytes      | 2^64 bytes (~16 EiB)              |
+| Architecture               | Address Bus Width      | Pointer Size | Addressable Virtual Address Space |
+| :------------------------- | :--------------------- | :----------- | :-------------------------------- |
+| **32-bit (x86, ARM32)**    | 32 bits                | 4 bytes      | 2^32 bytes (~4 GiB)               |
+| **64-bit (x86-64, ARM64)** | 64 bits (48-57 active) | 8 bytes      | 2^64 bytes (~16 EiB)              |
 
 ### Memory Overhead in 64-bit Systems
 
@@ -53,7 +53,7 @@ Because pointers in a 64-bit environment occupy **8 bytes**, pointer-dense runti
 
 ---
 
-## 3. CPU Execution Pipeline
+## CPU Execution Pipeline
 
 The CPU operates as an automated state machine executing machine instructions retrieved from memory.
 
@@ -61,17 +61,17 @@ The CPU operates as an automated state machine executing machine instructions re
 flowchart TD
     subgraph CPU["Central Processing Unit (CPU)"]
         PC["Program Counter (PC)<br/>Holds address of current instruction"]
-        Regs["Registers (General Purpose: RAX, RDI, etc.)"]
+        Regs["Registers (General Purpose: RAX, RDI)"]
         ALU["Arithmetic Logic Unit (ALU)"]
     end
 
-    subgraph Bus["Memory Bus"]
-        AddressBus["Address & Data Bus"]
+    subgraph Bus["System Memory Bus"]
+        AddressBus["Address & Data Lines"]
     end
 
     subgraph RAM["Physical Memory (RAM)"]
-        Instructions["Code Segment (Opcodes)"]
-        DataSpace["Data Segment & Heap"]
+        Instructions["Code Segment: Machine Opcodes"]
+        DataSpace["Data Segment & Heap Memory"]
     end
 
     PC -->|Instruction Fetch| AddressBus
@@ -83,9 +83,9 @@ flowchart TD
 
 ### The Instruction Cycle
 
-1. **Instruction Fetch**: The CPU retrieves the instruction byte sequence from the address designated by the Program Counter (PC).
-2. **Instruction Decode**: The instruction decoder resolves the opcode and operand identifiers.
-3. **Execute**: The Arithmetic Logic Unit (ALU) or control unit executes the operation, updating register state and advancing the Program Counter.
+- **Instruction Fetch**: The CPU retrieves the instruction byte sequence from the address designated by the Program Counter (PC).
+- **Instruction Decode**: The instruction decoder resolves the opcode and operand identifiers.
+- **Execute**: The Arithmetic Logic Unit (ALU) executes the operation, updating register state and advancing the Program Counter.
 
 Higher-level runtimes like CPython do not bypass this cycle; rather, CPython is itself an executable compiled into machine instructions that the CPU processes according to these hardware rules.
 

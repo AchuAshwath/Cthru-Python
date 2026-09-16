@@ -14,64 +14,63 @@ The mission of Cthru-Python is to build true **Mechanical Empathy** for Python d
 
 ---
 
-## 2. Information Architecture & Sidebar Rules
+## 2. Information Architecture & Heading Rules
 
-1. **NO Numbered Categories in the Sidebar**:
-   - Do NOT use prefixes like `1. Foundations`, `2. Execution`.
-   - Learning is about **depth and conceptual order**, not a rigid school syllabus. People explore topics in ascending order according to their curiosity.
+1. **NO Numbers on Navigation or Categorical Headings**:
+   - Do NOT use numbered prefixes in the sidebar (`Overview`, `Memory & Architecture`, `CPython Internals`, `References`).
+   - Do NOT use numbers on subheadings unless describing an explicit, chronological sequence of execution steps or quantified metrics.
+   - Concept categories, features, and topics must use clean, descriptive titles (e.g., `## Linear Memory Addressing`, not `## 1. Linear Memory Addressing`).
 2. **Ascending Conceptual Progression**:
-   - Order groups and pages so that each naturally builds on the previous concept:
-     - `Overview`
-     - `Mental Models`
-     - `Computer Architecture & Memory`
-     - `The CPython Runtime`
-     - `Execution & Frames`
-     - `References & Bibliography`
+   - Topics are ordered so that each naturally builds on the previous concept without enforcing a rigid school-syllabus numbering scheme.
 
 ---
 
-## 3. Page Structure: Progressive Depth Architecture (LOD)
+## 3. Page Structure: Progressive Depth Architecture
 
-Every documentation page MUST follow a consistent 3-level progressive depth structure. This allows readers to choose their level of depth and drop off when satisfied, without getting stuck:
+Every documentation page follows a 3-tier progressive depth structure so readers can choose their level of depth and drop off whenever they are satisfied:
 
-### Level 1: The Basics (Intuition & What Happens)
-
-- **Target Audience**: Beginners with a basic understanding of Python syntax.
-- **Content**: Plain, clear, approachable English. No pretension, no heavy academic jargon.
-- **Hook**: Anchor the topic with a real, concrete Python puzzle or surprising behavior (e.g., `b = a`, mutable default arguments, `is` vs `==`).
-- **Hands-on**: Include a "Try This in Your Terminal" REPL snippet.
-
-### Level 2: The Intermediate (The Mechanics & Virtual Machine)
-
-- **Target Audience**: Developers who want to understand _why_ the behavior happens.
-- **Content**: How the CPython virtual machine handles the operation:
-  - Stack frames (`PyFrameObject`)
-  - Local symbol tables (`f_locals`)
-  - Pointer dereferencing
-  - Bytecode disassembly (`dis` opcodes like `LOAD_FAST`, `STORE_FAST`, `BINARY_OP`)
-  - Mermaid diagrams showing Call Stack vs Private Heap pointer flows.
-
-### Level 3: The Advanced (CPython C Internals & Memory Layout)
-
-- **Target Audience**: Systems engineers and developers seeking full C-level mastery.
-- **Content**:
-  - The underlying C structs from CPython source (`Include/object.h`, `Include/cpython/longintrepr.h`, etc.).
-  - Memory layouts and byte sizes (`sys.getsizeof()`, `ctypes.string_at()`).
-  - Allocation mechanisms (`pymalloc`, free lists, reference counting rules).
-  - Direct permalinks to CPython GitHub source lines.
+- **Basics (Intuition & Observable Behavior)**:
+  - Accessible to anyone with basic Python knowledge.
+  - Written in plain, clear English without pretension or academic jargon.
+  - Anchored by real code puzzles exposing confusing behavior (e.g., mutable defaults, aliasing, `is` vs `==`).
+  - Includes a "Try This in Your Terminal" hands-on REPL prompt.
+- **Intermediate (Mechanics & Virtual Machine)**:
+  - How CPython executes the concept: stack frames, pointer dereferencing, symbol tables.
+  - Bytecode analysis using `dis` (`LOAD_FAST`, `STORE_FAST`, `BINARY_OP`).
+  - Clear Mermaid pointer diagrams linking the Call Stack to Heap objects.
+- **Advanced (CPython C Internals & Memory Layout)**:
+  - Underlying C structs (`Include/object.h`, `Include/cpython/longintrepr.h`).
+  - Memory layouts, byte sizes (`sys.getsizeof()`, `ctypes.string_at()`).
+  - Memory allocation mechanisms (`pymalloc`, free lists, reference counting rules).
+  - Direct permalinks to CPython GitHub source files.
 
 ---
 
-## 4. Tone, Voice & Style Guidelines
+## 4. Mermaid Diagram Writing Standards
+
+1. **Direction by Semantic Meaning**:
+   - Use `flowchart LR` for pointer references, memory addresses, and data relationships (e.g. Stack frame pointers referencing Heap objects).
+   - Use `flowchart TD` for compilation pipelines, architectural hierarchies, and vertical stack-to-heap layouts.
+   - Use `sequenceDiagram` for temporal lifecycles (e.g. reference count increment, alias creation, decref, and deallocation).
+2. **Syntax Precision**:
+   - Always wrap node labels containing special characters, brackets, or parentheses in double quotes: `id["PyListObject at 0x105a20 [ 1, 2, 3 ]"]`.
+   - Avoid raw HTML formatting inside node text that can break SVG rendering.
+3. **Clarity & Focus**:
+   - Keep diagrams focused on a single mental model (5–8 nodes maximum).
+   - Use semantic subgraphs to clearly delineate memory boundaries: `subgraph Stack["Call Stack: Current Frame"]` and `subgraph Heap["Private Heap Space"]`.
+
+---
+
+## 5. Tone, Voice & Style Guidelines
 
 - **Zero Emojis**: Never use decorative emojis in headers, text, callouts, or tables. It degrades technical credibility.
-- **Human Developer Voice**: Write like a senior engineer explaining concepts to a curious colleague over coffee (similar to _Crafting Interpreters_, _Nand2Tetris_, and Julia Evans). Avoid both marketing hype and dry, impenetrable academic textbook language.
+- **Human Developer Voice**: Write like a senior engineer explaining concepts to a curious colleague over coffee (similar to _Crafting Interpreters_, _Nand2Tetris_, and Julia Evans). Avoid marketing hype and dry academic textbook language.
 - **Concrete over Abstract**: Always lead with runnable code rather than definitions. Show the behavior first, then explain the mechanism.
 - **Respect the Reader's Intelligence**: Do not lecture or condescend. Treat the reader as an engineer building a serious mental model.
 
 ---
 
-## 5. Development & Code Quality Commands
+## 6. Development & Code Quality Commands
 
 When making changes, always ensure code quality checks pass:
 

@@ -7,7 +7,7 @@ When an operating system initializes an executable, it instantiates a **Process*
 
 ---
 
-## 1. Virtual Address Space Segmentation
+## Virtual Address Space Segmentation
 
 A 64-bit user-space process is structured into standardized functional segments:
 
@@ -27,7 +27,7 @@ flowchart TD
 
 ---
 
-## 2. Allocation Characteristics: Stack vs. Heap
+## Allocation Characteristics: Stack vs. Heap
 
 The operating system provides two primary mechanisms for managing working memory during execution:
 
@@ -41,7 +41,7 @@ The operating system provides two primary mechanisms for managing working memory
 
 ---
 
-## 3. CPython's Memory Architecture
+## CPython Memory Architecture
 
 In compiled systems languages such as C, C++, and Rust, primitive variables are allocated directly within the call stack's active frame:
 

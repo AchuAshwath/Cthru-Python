@@ -22,7 +22,7 @@ This page breaks down how Python represents data in memory, structured into thre
 
 ---
 
-## Level 1: The Basics (Intuition & What Happens)
+## Basics: Intuition & Observable Behavior
 
 ### The Identity Badge Metaphor
 
@@ -59,25 +59,25 @@ Check the memory overhead of different basic types in your Python REPL:
 ```python
 import sys
 
-print("Empty string:", sys.getsizeof(""))        # ~49 bytes!
-print("Empty list:",   sys.getsizeof([]))        # ~56 bytes!
-print("Empty dict:",   sys.getsizeof({}))        # ~64 bytes!
+print("Empty string:", sys.getsizeof(""))        # ~49 bytes
+print("Empty list:",   sys.getsizeof([]))        # ~56 bytes
+print("Empty dict:",   sys.getsizeof({}))        # ~64 bytes
 ```
 
 Every single object carries structural overhead to support Python's dynamic runtime features.
 
 ---
 
-## Level 2: The Intermediate (Mechanics & The Virtual Machine)
+## Intermediate: Mechanics & The Virtual Machine
 
-Now let's examine how CPython uses this metadata during program execution.
+Let's examine how CPython uses this metadata during program execution.
 
 ### The 16-Byte Header
 
 Every object living on CPython's heap begins with the exact same 16-byte structural header:
 
-1. **`ob_refcnt` (8 bytes)**: The reference counter.
-2. **`ob_type` (8 bytes)**: A pointer pointing to the type descriptor struct (such as `PyLong_Type` or `PyList_Type`).
+- **`ob_refcnt` (8 bytes)**: The reference counter.
+- **`ob_type` (8 bytes)**: A pointer pointing to the type descriptor struct (such as `PyLong_Type` or `PyList_Type`).
 
 ```mermaid
 flowchart TD
@@ -117,10 +117,10 @@ sequenceDiagram
     Note over Heap: ob_refcnt = 1
 
     Scope->>Heap: del items (Removes final reference)
-    Note over Heap: ob_refcnt == 0 -> Freed immediately!
+    Note over Heap: ob_refcnt == 0 -> Freed immediately
 ```
 
-You can inspect an object's reference count directly using `sys.getrefcount()`:
+Inspect an object's reference count directly using `sys.getrefcount()`:
 
 ```python
 import sys
@@ -176,9 +176,9 @@ print(id(x) == id(y)) # False: Distinct memory addresses
 
 ---
 
-## Level 3: The Advanced (CPython C Internals)
+## Advanced: CPython C Internals
 
-For systems engineers, here is how `PyObject` is defined and manipulated in CPython's C source code.
+Here is how `PyObject` is defined and manipulated in CPython's C source code.
 
 ### The C Struct Definition
 
@@ -251,12 +251,12 @@ When an integer is created, CPython checks if `ival >= -5 && ival < 257`. If so,
 
 ---
 
-## Summary of Key Takeaways
+## Summary
 
-| Level                      | Key Takeaway                                                                                                       |
-| :------------------------- | :----------------------------------------------------------------------------------------------------------------- |
-| **Level 1 (Basics)**       | Numbers in Python are wrapped in an "identity badge" carrying type, count, and size metadata.                      |
-| **Level 2 (Intermediate)** | The 16-byte header enables automatic reference counting; small ints `[-5, 256]` are cached singletons.             |
-| **Level 3 (Advanced)**     | In C, `PyObject` is defined as `ob_refcnt` + `*ob_type`; integers use 30-bit digit arrays for arbitrary precision. |
+| Layer            | Core Principle                                                                                                     |
+| :--------------- | :----------------------------------------------------------------------------------------------------------------- |
+| **Basics**       | Numbers in Python are wrapped in an "identity badge" carrying type, count, and size metadata.                      |
+| **Intermediate** | The 16-byte header enables automatic reference counting; small ints `[-5, 256]` are cached singletons.             |
+| **Advanced**     | In C, `PyObject` is defined as `ob_refcnt` + `*ob_type`; integers use 30-bit digit arrays for arbitrary precision. |
 
 Next: **[Process Address Space: Stack vs. Heap](/foundations/process-stack-and-heap/)**.
