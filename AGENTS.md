@@ -4,7 +4,7 @@ Cthru-Python is an open-source technical reference and visual execution guide de
 
 ---
 
-## 1. Project Vision & Direction
+## Project Vision & Direction
 
 The mission of Cthru-Python is to build true **Mechanical Empathy** for Python developers:
 
@@ -14,18 +14,18 @@ The mission of Cthru-Python is to build true **Mechanical Empathy** for Python d
 
 ---
 
-## 2. Information Architecture & Heading Rules
+## Information Architecture & Heading Standards
 
-1. **NO Numbers on Navigation or Categorical Headings**:
-   - Do NOT use numbered prefixes in the sidebar (`Overview`, `Memory & Architecture`, `CPython Internals`, `References`).
-   - Do NOT use numbers on subheadings unless describing an explicit, chronological sequence of execution steps or quantified metrics.
-   - Concept categories, features, and topics must use clean, descriptive titles (e.g., `## Linear Memory Addressing`, not `## 1. Linear Memory Addressing`).
-2. **Ascending Conceptual Progression**:
-   - Topics are ordered so that each naturally builds on the previous concept without enforcing a rigid school-syllabus numbering scheme.
+- **No Numbers on Navigation or Categorical Headings**:
+  - Do not use numbered prefixes in the sidebar (`Overview`, `Memory & Architecture`, `CPython Internals`, `References`).
+  - Do not use numbers on subheadings unless describing an explicit, chronological sequence of execution steps or quantified metrics.
+  - Concept categories, features, and topics must use clean, descriptive titles (e.g., `## Linear Memory Addressing`, not `## 1. Linear Memory Addressing`).
+- **Ascending Conceptual Progression**:
+  - Topics are ordered so that each naturally builds on the previous concept without enforcing a rigid school-syllabus numbering scheme.
 
 ---
 
-## 3. Page Structure: Progressive Depth Architecture
+## Page Structure: Progressive Depth Architecture
 
 Every documentation page follows a 3-tier progressive depth structure so readers can choose their level of depth and drop off whenever they are satisfied:
 
@@ -46,22 +46,22 @@ Every documentation page follows a 3-tier progressive depth structure so readers
 
 ---
 
-## 4. Mermaid Diagram Writing Standards
+## Mermaid Diagram Writing Standards
 
-1. **Direction by Semantic Meaning**:
-   - Use `flowchart LR` for pointer references, memory addresses, and data relationships (e.g. Stack frame pointers referencing Heap objects).
-   - Use `flowchart TD` for compilation pipelines, architectural hierarchies, and vertical stack-to-heap layouts.
-   - Use `sequenceDiagram` for temporal lifecycles (e.g. reference count increment, alias creation, decref, and deallocation).
-2. **Syntax Precision**:
-   - Always wrap node labels containing special characters, brackets, or parentheses in double quotes: `id["PyListObject at 0x105a20 [ 1, 2, 3 ]"]`.
-   - Avoid raw HTML formatting inside node text that can break SVG rendering.
-3. **Clarity & Focus**:
-   - Keep diagrams focused on a single mental model (5–8 nodes maximum).
-   - Use semantic subgraphs to clearly delineate memory boundaries: `subgraph Stack["Call Stack: Current Frame"]` and `subgraph Heap["Private Heap Space"]`.
+- **Direction by Semantic Meaning**:
+  - Use `flowchart LR` for pointer references, memory addresses, and data relationships (e.g. Stack frame pointers referencing Heap objects).
+  - Use `flowchart TD` for compilation pipelines, architectural hierarchies, and vertical stack-to-heap layouts.
+  - Use `sequenceDiagram` for temporal lifecycles (e.g. reference count increment, alias creation, decref, and deallocation).
+- **Syntax Precision**:
+  - Always wrap node labels containing special characters, brackets, or parentheses in double quotes: `id["PyListObject at 0x105a20 [ 1, 2, 3 ]"]`.
+  - Avoid raw HTML formatting inside node text that can break SVG rendering.
+- **Clarity & Focus**:
+  - Keep diagrams focused on a single mental model (5–8 nodes maximum).
+  - Use semantic subgraphs to clearly delineate memory boundaries: `subgraph Stack["Call Stack: Current Frame"]` and `subgraph Heap["Private Heap Space"]`.
 
 ---
 
-## 5. Tone, Voice & Style Guidelines
+## Tone, Voice & Style Guidelines
 
 - **Zero Emojis**: Never use decorative emojis in headers, text, callouts, or tables. It degrades technical credibility.
 - **Human Developer Voice**: Write like a senior engineer explaining concepts to a curious colleague over coffee (similar to _Crafting Interpreters_, _Nand2Tetris_, and Julia Evans). Avoid marketing hype and dry academic textbook language.
@@ -70,7 +70,7 @@ Every documentation page follows a 3-tier progressive depth structure so readers
 
 ---
 
-## 6. Development & Code Quality Commands
+## Development & Code Quality Commands
 
 When making changes, always ensure code quality checks pass:
 
