@@ -160,14 +160,14 @@
   }
 
   html[data-has-hero] .sl-container {
-    max-width: 1120px;
+    max-width: 1360px;
     margin: 0 auto;
     width: 100%;
-    padding: 0 1.5rem;
+    padding: 0 2rem;
   }
 
   .cthru-hero-container {
-    min-height: calc(100vh - var(--sl-nav-height) - 3rem);
+    min-height: calc(100vh - var(--sl-nav-height) - 1.5rem);
   }
 }
 
