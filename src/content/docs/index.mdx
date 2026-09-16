@@ -7,73 +7,9 @@ hero:
   image:
     file: ../../../public/cthru-hero.svg
   actions:
-    - text: "Start Reading: The Mental Model"
+    - text: "See Through"
       link: /foundations/mental-model/
-      icon: right-arrow
-    - text: "GitHub Repository"
+    - text: "GitHub"
       link: https://github.com/AchuAshwath/Cthru-Python
-      icon: external
       variant: minimal
 ---
-
-import { Card, CardGrid } from "@astrojs/starlight/components";
-
-## The Bug That Breaks Every Beginner
-
-Consider what happens when evaluating this standard snippet:
-
-```python
-a = [1, 2, 3]
-b = a
-b.append(4)
-
-print(a)
-```
-
-Developers taught that a variable is a "container holding a value" expect `print(a)` to output `[1, 2, 3]`. When the terminal outputs `[1, 2, 3, 4]`, they memorize a rule: _"Lists are mutable, numbers are immutable."_
-
-That is not an explanation—it is a coping mechanism.
-
-### What Actually Occurs in Memory:
-
-1. `[1, 2, 3]` is allocated at heap address `0x10f440`.
-2. `a` is an 8-byte pointer holding the address `0x10f440`.
-3. `b = a` copies the **address**, not the list. Both `a` and `b` point to `0x10f440`.
-4. `b.append(4)` modifies the memory block at `0x10f440` in place.
-5. Evaluating `a` dereferences `0x10f440`. Because only one list was ever allocated in memory, `a` reflects the appended element.
-
----
-
-## Architectural Pillars
-
-<CardGrid>
-  <Card title="The Pointer Reality">
-    Variables are not storage containers. They are symbolic names bound to 8-byte pointer addresses
-    in a stack frame array (`f_locals`).
-  </Card>
-  <Card title="Mechanical Empathy">
-    Understanding the Call Stack, Private Heap, and CPython evaluation loop makes runtime behavior
-    transparent and debugging intuitive.
-  </Card>
-  <Card title="CPython Internals">
-    Inspect real `PyObject` headers (`ob_refcnt`, `ob_type`), virtual memory addresses with `id()`,
-    and bytecode opcodes with `dis`.
-  </Card>
-  <Card title="Primary Source References">
-    Every concept links directly to primary sources: CPython C source files (`Include/object.h`,
-    `Python/ceval.c`), seminal talks, and technical literature.
-  </Card>
-</CardGrid>
-
----
-
-## Curriculum Map
-
-Explore the documentation across conceptual depth:
-
-- **[The Execution and Memory Model](/foundations/mental-model/)**: Name binding, object identity, and the sticky note mental model.
-- **[Hardware Architecture & Memory Addressing](/foundations/hardware-and-memory/)**: Linear physical memory addressing, word alignment, and 64-bit pointers.
-- **[Process Address Space: Stack vs. Heap](/foundations/process-stack-and-heap/)**: Virtual memory segmentation and CPython's heap-exclusive allocation model.
-- **[The CPython Runtime Architecture](/foundations/what-is-python/)**: The compilation pipeline, code objects, and the `ceval.c` evaluation loop.
-- **[The Universal PyObject](/foundations/the-pyobject/)**: Structural layout of `_object`, reference counting, and small integer singletons.
-- **[Bibliography & Primary References](/foundations/reading-list/)**: Curated reading list of seminal talks, books, and source files.

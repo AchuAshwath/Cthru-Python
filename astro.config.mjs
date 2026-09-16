@@ -15,6 +15,9 @@ export default defineConfig({
       description:
         "See through Python abstractions. Master Python from hardware memory to CPython internals.",
       customCss: ["./src/styles/global.css"],
+      components: {
+        Hero: "./src/components/Hero.astro",
+      },
       social: [
         { icon: "github", label: "GitHub", href: "https://github.com/AchuAshwath/Cthru-Python" },
       ],

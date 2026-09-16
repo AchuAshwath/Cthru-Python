@@ -1,19 +1,19 @@
 @import "tailwindcss";
 
-/* Professional, high-contrast engineering documentation theme (GitHub Dark inspired) */
+/* Shadcn-inspired Dark High-Contrast Theme */
 :root {
-  --sl-color-accent-low: #14284b;
-  --sl-color-accent: #2f81f7;
-  --sl-color-accent-high: #79c0ff;
+  --sl-color-accent-low: #18181b;
+  --sl-color-accent: #f4f4f5;
+  --sl-color-accent-high: #ffffff;
 
-  --sl-color-black: #010409;
-  --sl-color-gray-6: #0d1117;
-  --sl-color-gray-5: #161b22;
-  --sl-color-gray-4: #21262d;
-  --sl-color-gray-3: #30363d;
-  --sl-color-gray-2: #8b949e;
-  --sl-color-gray-1: #c9d1d9;
-  --sl-color-white: #f0f6fc;
+  --sl-color-black: #09090b;
+  --sl-color-gray-6: #0c0c0e;
+  --sl-color-gray-5: #18181b;
+  --sl-color-gray-4: #27272a;
+  --sl-color-gray-3: #3f3f46;
+  --sl-color-gray-2: #a1a1aa;
+  --sl-color-gray-1: #e4e4e7;
+  --sl-color-white: #f4f4f5;
 
   --sl-font:
     -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
@@ -22,26 +22,88 @@
 }
 
 :root[data-theme="dark"] {
-  --sl-color-bg: #0d1117;
-  --sl-color-bg-nav: #0d1117;
-  --sl-color-bg-sidebar: #0d1117;
-  --sl-color-hairline: #30363d;
+  --sl-color-bg: #09090b;
+  --sl-color-bg-nav: #09090b;
+  --sl-color-bg-sidebar: #09090b;
+  --sl-color-hairline: #27272a;
 }
 
-/* Understated, professional typography */
+/* Single-page no-scroll hero landing */
+@media (min-width: 768px) {
+  html[data-has-hero],
+  html[data-has-hero] body {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  html[data-has-hero] .page {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  html[data-has-hero] .main-frame {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  html[data-has-hero] .main-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  html[data-has-hero] main {
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+
+  html[data-has-hero] .content-panel {
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  html[data-has-hero] .sl-container {
+    max-width: 1120px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 1.5rem;
+  }
+
+  .cthru-hero-container {
+    min-height: calc(100vh - var(--sl-nav-height) - 3rem);
+  }
+}
+
+html[data-has-hero] footer {
+  display: none !important;
+}
+
+html[data-has-hero] .sl-markdown-content:empty {
+  display: none !important;
+}
+
+/* Shadcn-consistent typography */
 h1,
 h2,
 h3,
 h4 {
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 /* Clean code block presentation */
 pre {
-  border: 1px solid #30363d !important;
-  border-radius: 6px !important;
-  background-color: #161b22 !important;
+  border: 1px solid #27272a !important;
+  border-radius: 8px !important;
+  background-color: #121215 !important;
 }
 
 code {
@@ -52,17 +114,43 @@ code {
 .mermaid {
   display: flex;
   justify-content: center;
-  background: #161b22;
-  border: 1px solid #30363d;
-  border-radius: 6px;
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 8px;
   padding: 1.25rem;
   margin: 1.5rem 0;
   overflow-x: auto;
 }
 
-/* Clean card layout */
+/* Shadcn consistent Card styling */
 .card {
-  background: #161b22 !important;
-  border: 1px solid #30363d !important;
-  border-radius: 6px !important;
+  background: #121215 !important;
+  border: 1px solid #27272a !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Shadcn consistent callout asides */
+.starlight-aside {
+  background-color: #121215 !important;
+  border: 1px solid #27272a !important;
+  border-left-width: 3px !important;
+  border-radius: 8px !important;
+  color: #f4f4f5 !important;
+}
+
+.starlight-aside--note {
+  border-left-color: #3b82f6 !important;
+}
+
+.starlight-aside--tip {
+  border-left-color: #10b981 !important;
+}
+
+.starlight-aside--caution {
+  border-left-color: #f59e0b !important;
+}
+
+.starlight-aside--danger {
+  border-left-color: #ef4444 !important;
 }
