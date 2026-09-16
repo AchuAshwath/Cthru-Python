@@ -2,18 +2,18 @@
 
 /* 
   Cthru-Python Design System
-  - Neutrals: White & Black adjusted with deep Python midnight slate
-  - Secondary: Python Blue (#3776AB / #4B8BBE)
-  - Tertiary: Python Yellow (#FFD43B / #FFE873)
+  - Primary Neutrals: Crisp White (#f8fafc) & Deep Midnight Slate (#070b14 / #0a0f1d)
+  - Secondary Accent (Subtle): Python Blue (#3776AB / #58A6FF)
+  - Tertiary Accent (Subtle): Python Yellow (#FFD43B / #FFE873)
 */
 
 :root {
-  /* Secondary: Python Blue */
-  --sl-color-accent-low: #0f2338;
+  /* Secondary Accent: Python Blue */
+  --sl-color-accent-low: rgba(55, 118, 171, 0.1);
   --sl-color-accent: #3776ab;
   --sl-color-accent-high: #58a6ff;
 
-  /* Neutrals: Cool, Python-tinted dark */
+  /* Primary Neutrals: Python-tinted midnight dark */
   --sl-color-black: #060911;
   --sl-color-gray-6: #0a0f1d;
   --sl-color-gray-5: #10172a;
@@ -34,11 +34,6 @@
   --sl-color-bg-nav: #070b14;
   --sl-color-bg-sidebar: #05080f;
   --sl-color-hairline: #172338;
-
-  --python-blue: #3776ab;
-  --python-blue-light: #58a6ff;
-  --python-yellow: #ffd43b;
-  --python-yellow-light: #ffe873;
 }
 
 :root[data-theme="light"] {
@@ -59,11 +54,67 @@
   --sl-color-accent-low: #e8f2fc;
   --sl-color-accent: #3776ab;
   --sl-color-accent-high: #205081;
+}
 
-  --python-blue: #3776ab;
-  --python-blue-light: #205081;
-  --python-yellow: #d99b00;
-  --python-yellow-light: #b37d00;
+/* Navbar & Site Title: Clean White in Dark Mode, Clean Black in Light Mode */
+:root[data-theme="dark"] .site-title {
+  color: #f8fafc !important;
+}
+
+:root[data-theme="dark"] .social-icons a {
+  color: #f8fafc !important;
+}
+
+:root[data-theme="dark"] .social-icons a:hover {
+  color: #ffffff !important;
+  opacity: 0.85;
+}
+
+:root[data-theme="light"] .site-title {
+  color: #0a0f1d !important;
+}
+
+:root[data-theme="light"] .social-icons a {
+  color: #0a0f1d !important;
+}
+
+:root[data-theme="light"] .social-icons a:hover {
+  color: #000000 !important;
+  opacity: 0.85;
+}
+
+/* Sidebar Headings & Categories: Clean White / Neutral */
+:root[data-theme="dark"] .sidebar-content summary,
+:root[data-theme="dark"] .sidebar-content .large,
+:root[data-theme="dark"] .sidebar-content h2,
+:root[data-theme="dark"] .sidebar-pane .group-label {
+  color: #f8fafc !important;
+}
+
+:root[data-theme="light"] .sidebar-content summary,
+:root[data-theme="light"] .sidebar-content .large,
+:root[data-theme="light"] .sidebar-content h2,
+:root[data-theme="light"] .sidebar-pane .group-label {
+  color: #0a0f1d !important;
+}
+
+/* Active sidebar item: White text with subtle Python Blue accent border */
+:root[data-theme="dark"] .sidebar-content a[aria-current="page"] {
+  color: #ffffff !important;
+  background-color: rgba(55, 118, 171, 0.12) !important;
+  border-left: 2px solid #3776ab !important;
+  font-weight: 600;
+}
+
+:root[data-theme="dark"] .sidebar-content a:hover {
+  color: #ffffff !important;
+}
+
+:root[data-theme="light"] .sidebar-content a[aria-current="page"] {
+  color: #0a0f1d !important;
+  background-color: rgba(55, 118, 171, 0.08) !important;
+  border-left: 2px solid #3776ab !important;
+  font-weight: 600;
 }
 
 /* Single-page no-scroll hero landing */
@@ -128,25 +179,21 @@ html[data-has-hero] .sl-markdown-content:empty {
   display: none !important;
 }
 
-/* Shadcn-consistent typography */
+/* Headings: Crisp White in dark mode, crisp Black in light mode */
 h1,
 h2,
 h3,
 h4 {
   font-weight: 600;
   letter-spacing: -0.025em;
+  color: #f8fafc;
 }
 
-/* Active navigation item with Python Blue accent */
-.sidebar-content a[aria-current="page"] {
-  color: var(--sl-color-accent-high) !important;
-  background-color: var(--sl-color-accent-low) !important;
-  border-left: 2px solid var(--sl-color-accent) !important;
-  font-weight: 600;
-}
-
-.sidebar-content a:hover {
-  color: var(--sl-color-accent-high) !important;
+:root[data-theme="light"] h1,
+:root[data-theme="light"] h2,
+:root[data-theme="light"] h3,
+:root[data-theme="light"] h4 {
+  color: #0a0f1d;
 }
 
 /* Clean code block presentation */
@@ -184,7 +231,7 @@ code {
   border-color: #2b3e60 !important;
 }
 
-/* Callout Asides using Python Blue (Note) and Python Yellow (Tip) */
+/* Callout Asides with subtle Python Blue (Note) and Python Yellow (Tip) accents */
 .starlight-aside {
   background-color: #0c1222 !important;
   border: 1px solid #1a2538 !important;
@@ -193,13 +240,13 @@ code {
   color: #f8fafc !important;
 }
 
-/* Note: Python Blue */
+/* Note: Subtle Python Blue accent */
 .starlight-aside--note {
   border-left-color: #3776ab !important;
   background-color: rgba(55, 118, 171, 0.08) !important;
 }
 
-/* Tip: Python Yellow / Gold */
+/* Tip: Subtle Python Yellow / Gold accent */
 .starlight-aside--tip {
   border-left-color: #ffd43b !important;
   background-color: rgba(255, 212, 59, 0.08) !important;
