@@ -6,8 +6,8 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://achuashwath.github.io",
-  base: "/Cthru-Python",
+  site: "https://cthru-python.achuashwath.dev",
+  base: "/",
   integrations: [
     starlight({
       title: "Cthru-Python",
