@@ -1,16 +1,16 @@
 ---
 title: Cthru-Python
-description: "See through Python's abstractions. Master Python from first principles—hardware memory, pointers, and CPython internals."
+description: "See through Python's abstractions. The missing mechanical empathy guide for Python developers."
 template: splash
 hero:
-  tagline: "Stop memorizing syntax tricks. Understand where the bytes live, how CPython runs, and why variables are not boxes."
+  tagline: "They told you Python has no pointers. They lied. Master CPython memory, stack frames, and the private heap from first principles."
   image:
-    file: ../../assets/houston.webp
+    file: ../../../public/cthru-hero.svg
   actions:
-    - text: "Start Learning: The Mental Model"
+    - text: "Start Reading: The Mental Model"
       link: /foundations/mental-model/
       icon: right-arrow
-    - text: "View on GitHub"
+    - text: "GitHub Repository"
       link: https://github.com/AchuAshwath/Cthru-Python
       icon: external
       variant: minimal
@@ -18,24 +18,57 @@ hero:
 
 import { Card, CardGrid } from "@astrojs/starlight/components";
 
-## Why Cthru-Python?
+## The Bug That Breaks Every Beginner
 
-<CardGrid stagger>
-  <Card title="Variables Are Not Boxes" icon="warning">
-    Every intro course tells you variables are containers holding values. In Python, variables are
-    **labels (pointers)** pointing to objects in the heap. Understanding this unlocks mutability,
-    aliasing, and closures.
+Ask someone who has been writing Python for six months what this does:
+
+```python
+a = [1, 2, 3]
+b = a
+b.append(4)
+
+print(a)
+```
+
+Almost everyone who was taught that _"a variable is a box containing a value"_ guesses `[1, 2, 3]`.  
+When the terminal prints `[1, 2, 3, 4]`, they memorize a rule: _"Lists are mutable, numbers are immutable."_
+
+That isn't an explanation—it's a coping mechanism.
+
+### What Actually Happened in RAM:
+
+1. `[1, 2, 3]` is allocated at heap address `0x10f440`.
+2. `a` is an 8-byte pointer holding the address `0x10f440`.
+3. `b = a` copies the **address**, not the list. Now both `a` and `b` point to `0x10f440`.
+4. `b.append(4)` modifies the memory block at `0x10f440`.
+5. Printing `a` reads `0x10f440`. Of course it shows `4`—there was only ever **one list** in memory.
+
+---
+
+## Why We Built This
+
+<CardGrid>
+  <Card title="Kill the 'Box' Metaphor">
+    Variables aren't cardboard boxes. They are pointers in a stack frame dictionary (`f_locals`).
+    Once you see Python this way, mutability, aliasing, and closures make complete sense.
   </Card>
-  <Card title="Mechanical Empathy" icon="laptop">
-    You don't need to write C to master Python, but understanding the **Call Stack, Private Heap,
-    and bytecode execution loop** makes you write cleaner, faster, bug-free code naturally.
+  <Card title="Mechanical Empathy">
+    Formula 1 drivers don't need to rebuild transmissions, but they know how a gearbox works so they
+    don't shred it. Developers who understand CPython write faster, cleaner code and debug 10x
+    faster.
   </Card>
-  <Card title="The Universal PyObject" icon="puzzle">
-    Discover why an integer takes 28 bytes in Python, what `id()` and `sys.getrefcount()` actually
-    measure, and how the Small Integer Cache works under the hood.
+  <Card title="Real CPython Internals">
+    Inspect real `PyObject` headers (`ob_refcnt`, `ob_type`), real memory addresses with `id()`,
+    real bytecode with `dis`, and the actual C loops inside `ceval.c`.
   </Card>
-  <Card title="Curated from First Principles" icon="open-book">
-    Inspired by seminal engineering talks, books like *Fluent Python* and *CPython Internals*, and
-    actual source code from CPython's GitHub repository.
+  <Card title="No Fluff, No Filler">
+    Curated from seminal talks by Ned Batchelder, books like *Fluent Python*, and the CPython source
+    code. Every concept has runnable code you can verify in your own terminal.
   </Card>
 </CardGrid>
+
+---
+
+## Where to Begin
+
+Start with **[The Mental Model](/foundations/mental-model/)** to unlearn the bad habits from intro tutorials, or browse the **[Curated Reading List](/foundations/reading-list/)** for the engineering talks and papers that inspired this project.
