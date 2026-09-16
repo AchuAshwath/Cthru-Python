@@ -17,6 +17,7 @@ export default defineConfig({
       customCss: ["./src/styles/global.css"],
       components: {
         Hero: "./src/components/Hero.astro",
+        ThemeSelect: "./src/components/ThemeSelect.astro",
       },
       social: [
         { icon: "github", label: "GitHub", href: "https://github.com/AchuAshwath/Cthru-Python" },

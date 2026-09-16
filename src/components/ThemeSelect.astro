@@ -1,0 +1,369 @@
+---
+---
+
+<div class="relative inline-block text-left shadcn-theme-toggle">
+  <!-- Trigger Button -->
+  <button
+    type="button"
+    class="theme-toggle-trigger inline-flex items-center justify-center h-8 w-8 rounded-md border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:text-zinc-100 text-zinc-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 cursor-pointer relative"
+    aria-label="Toggle theme"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <!-- Sun Icon (Lucide Sun) -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="sun-icon transition-all duration-200 pointer-events-none"
+    >
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2"></path>
+      <path d="M12 20v2"></path>
+      <path d="m4.93 4.93 1.41 1.41"></path>
+      <path d="m17.66 17.66 1.41 1.41"></path>
+      <path d="M2 12h2"></path>
+      <path d="M20 12h2"></path>
+      <path d="m6.34 17.66-1.41 1.41"></path>
+      <path d="m19.07 4.93-1.41 1.41"></path>
+    </svg>
+
+    <!-- Moon Icon (Lucide Moon) -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="moon-icon absolute transition-all duration-200 pointer-events-none"
+    >
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+    </svg>
+    <span class="sr-only">Toggle theme</span>
+  </button>
+
+  <!-- Dropdown Menu -->
+  <div
+    class="theme-dropdown absolute right-0 mt-1.5 w-36 rounded-md border border-zinc-800 bg-zinc-950 p-1 text-zinc-200 shadow-xl z-50 backdrop-blur-md hidden transition-all"
+    role="menu"
+    aria-orientation="vertical"
+  >
+    <button
+      type="button"
+      data-theme-value="light"
+      role="menuitem"
+      class="theme-option flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-1.5 text-xs font-medium outline-none hover:bg-zinc-800 hover:text-white transition-colors text-zinc-300"
+    >
+      <span class="flex items-center gap-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="shrink-0 text-zinc-400"
+        >
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+        Light
+      </span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="check-icon opacity-0 transition-opacity"
+      >
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      data-theme-value="dark"
+      role="menuitem"
+      class="theme-option flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-1.5 text-xs font-medium outline-none hover:bg-zinc-800 hover:text-white transition-colors text-zinc-300"
+    >
+      <span class="flex items-center gap-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="shrink-0 text-zinc-400"
+        >
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+        Dark
+      </span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="check-icon opacity-0 transition-opacity"
+      >
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      data-theme-value="auto"
+      role="menuitem"
+      class="theme-option flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-1.5 text-xs font-medium outline-none hover:bg-zinc-800 hover:text-white transition-colors text-zinc-300"
+    >
+      <span class="flex items-center gap-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="shrink-0 text-zinc-400"
+        >
+          <rect width="20" height="14" x="2" y="3" rx="2"></rect>
+          <line x1="8" x2="16" y1="21" y2="21"></line>
+          <line x1="12" x2="12" y1="17" y2="21"></line>
+        </svg>
+        System
+      </span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="check-icon opacity-0 transition-opacity"
+      >
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  /* Clean icon rotation in trigger button */
+  :root[data-theme="dark"] .sun-icon {
+    transform: rotate(90deg) scale(0);
+    opacity: 0;
+  }
+  :root[data-theme="dark"] .moon-icon {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+
+  :root[data-theme="light"] .sun-icon {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  :root[data-theme="light"] .moon-icon {
+    transform: rotate(-90deg) scale(0);
+    opacity: 0;
+  }
+
+  /* Light mode adaptations for shadcn theme changer */
+  :root[data-theme="light"] .theme-toggle-trigger {
+    border-color: #e4e4e7;
+    background-color: #ffffff;
+    color: #71717a;
+  }
+  :root[data-theme="light"] .theme-toggle-trigger:hover {
+    background-color: #f4f4f5;
+    color: #09090b;
+    border-color: #d4d4d8;
+  }
+
+  :root[data-theme="light"] .theme-dropdown {
+    border-color: #e4e4e7;
+    background-color: #ffffff;
+    color: #09090b;
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  }
+
+  :root[data-theme="light"] .theme-option {
+    color: #3f3f46;
+  }
+  :root[data-theme="light"] .theme-option:hover {
+    background-color: #f4f4f5;
+    color: #09090b;
+  }
+  :root[data-theme="light"] .theme-option.is-selected {
+    background-color: #f4f4f5;
+    color: #09090b;
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  type Theme = "auto" | "dark" | "light";
+  const STORAGE_KEY = "starlight-theme";
+
+  function getStoredTheme(): Theme {
+    if (typeof localStorage === "undefined") return "auto";
+    const val = localStorage.getItem(STORAGE_KEY);
+    if (val === "dark" || val === "light") return val;
+    return "auto";
+  }
+
+  function getSystemTheme(): "dark" | "light" {
+    return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+
+  function applyTheme(theme: Theme) {
+    const effectiveTheme = theme === "auto" ? getSystemTheme() : theme;
+    document.documentElement.dataset.theme = effectiveTheme;
+
+    if (theme === "auto") {
+      localStorage.removeItem(STORAGE_KEY);
+    } else {
+      localStorage.setItem(STORAGE_KEY, theme);
+    }
+
+    // Update active checkmarks across all instances
+    document.querySelectorAll(".shadcn-theme-toggle").forEach((container) => {
+      container.querySelectorAll(".theme-option").forEach((option) => {
+        const optVal = option.getAttribute("data-theme-value");
+        const check = option.querySelector(".check-icon");
+        if (check) {
+          if (optVal === theme) {
+            check.classList.remove("opacity-0");
+            check.classList.add("opacity-100");
+            option.classList.add("is-selected", "bg-zinc-800/60", "text-white");
+          } else {
+            check.classList.add("opacity-0");
+            check.classList.remove("opacity-100");
+            option.classList.remove("is-selected", "bg-zinc-800/60", "text-white");
+          }
+        }
+      });
+    });
+
+    // Notify Starlight internal pickers if any exist
+    if (typeof window !== "undefined" && (window as any).StarlightThemeProvider?.updatePickers) {
+      (window as any).StarlightThemeProvider.updatePickers(theme);
+    }
+  }
+
+  function initThemeToggles() {
+    const currentStored = getStoredTheme();
+    applyTheme(currentStored);
+
+    document.querySelectorAll(".shadcn-theme-toggle").forEach((container) => {
+      const trigger = container.querySelector<HTMLButtonElement>(".theme-toggle-trigger");
+      const dropdown = container.querySelector<HTMLDivElement>(".theme-dropdown");
+      const options = container.querySelectorAll<HTMLButtonElement>(".theme-option");
+
+      if (!trigger || !dropdown) return;
+
+      const closeMenu = () => {
+        dropdown.classList.add("hidden");
+        trigger.setAttribute("aria-expanded", "false");
+      };
+
+      const openMenu = () => {
+        // Close other open theme dropdowns first
+        document.querySelectorAll(".theme-dropdown").forEach((d) => d.classList.add("hidden"));
+        dropdown.classList.remove("hidden");
+        trigger.setAttribute("aria-expanded", "true");
+      };
+
+      trigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = !dropdown.classList.contains("hidden");
+        if (isOpen) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      options.forEach((opt) => {
+        opt.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const targetTheme = opt.getAttribute("data-theme-value") as Theme;
+          if (targetTheme) {
+            applyTheme(targetTheme);
+            closeMenu();
+          }
+        });
+      });
+    });
+
+    // Global click-outside & Escape key listeners
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".theme-dropdown").forEach((d) => d.classList.add("hidden"));
+      document
+        .querySelectorAll(".theme-toggle-trigger")
+        .forEach((t) => t.setAttribute("aria-expanded", "false"));
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        document.querySelectorAll(".theme-dropdown").forEach((d) => d.classList.add("hidden"));
+        document
+          .querySelectorAll(".theme-toggle-trigger")
+          .forEach((t) => t.setAttribute("aria-expanded", "false"));
+      }
+    });
+  }
+
+  // React to system color scheme changes if in 'auto' mode
+  window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+    if (getStoredTheme() === "auto") {
+      applyTheme("auto");
+    }
+  });
+
+  // Run on initial load and after Astro page transitions
+  initThemeToggles();
+  document.addEventListener("astro:page-load", initThemeToggles);
+  document.addEventListener("astro:after-swap", initThemeToggles);
+</script>
