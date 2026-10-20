@@ -89,17 +89,9 @@ When an engineer finds the page via Google or the Starlight search bar:
 
 ---
 
-## Progressive Disclosure by Topic
+## The Topic Matrix & Curriculum
 
-| Topic                     | Layer 1: Intuition & Behavior            | Layer 2: Virtual Machine Mechanics                | Layer 3: CPython C Internals                             |
-| :------------------------ | :--------------------------------------- | :------------------------------------------------ | :------------------------------------------------------- |
-| **Variables & Names**     | Aliasing mystery, `id()`, `is` vs `==`   | Frame `localsplus` array vs `f_globals` dict      | `PyFrameObject`, `STORE_FAST`, pointer offsets           |
-| **The Heap & Memory**     | Dynamic object pool vs call stack        | PyMalloc: Arenas (256KB), Pools (4KB), Blocks     | `ob_refcnt`, `PyObject_Malloc`, OS `brk`/`mmap`          |
-| **Data Mutability**       | Mutating a list inside a tuple           | Fixed pointer array targeting dynamic heap buffer | `PyTupleObject`, `PyListObject`, over-allocation         |
-| **Integers & Primitives** | Why integers consume 28 bytes            | Small int cache ($-5$ to $256$), immutability     | `PyLongObject`, `ob_digit`, arbitrary precision          |
-| **Functions & Defaults**  | Default mutable argument persistence     | Heap-allocated `PyFunctionObject`, `__defaults__` | `func->func_defaults`, bytecode `MAKE_FUNCTION`          |
-| **The GIL**               | Why CPU threads don't speed up execution | Mutex protecting `ob_refcnt` during execution     | `ceval.c`, `take_eval_breaker()`, PEP 703 free-threading |
-| **Garbage Collection**    | Cyclic reference memory leak             | Reference counting vs Generational GC (Gen 0-2)   | `PyGC_Head`, doubly-linked lists, tri-color marking      |
+The comprehensive curriculum registry, detailed multi-layer breakdown, traditional documentation foils, spatial data models, production examples, and AI agent verification traps are maintained in [PROGRESSIVE_DISCLOSURE.md](file:///Users/ashwath/projects/Cthru-Python/PROGRESSIVE_DISCLOSURE.md).
 
 ---
 
