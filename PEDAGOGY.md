@@ -26,81 +26,77 @@ Cthru-Python operates on **Progressive Disclosure driven by Cognitive Friction**
                               |
                               v
 +-----------------------------------------------------------+
-| 3. Deep Dive Bridge (The "Rabbit Hole")                   |
-|    Provide a clean, direct portal to the standalone       |
-|    reference for readers who want the complete engine.    |
+| 3. Progressive Layer Unlocking (The "Read More...")       |
+|    Readers can expand into deeper layers on demand        |
+|    or follow contextual entry links (?layer=1, ?layer=2). |
 +-----------------------------------------------------------+
 ```
 
-Never introduce a C struct, an allocator, or a virtual machine constraint in the conceptual journey until the reader has experienced the problem it solves.
+Never introduce a C struct, an allocator, or a virtual machine constraint until the reader has experienced the problem it solves.
 
 ---
 
-## The Dual-Track Information Architecture
+## Single Canonical Pages with Progressive Layer Unlocking
 
-Cthru-Python serves two distinct user personas simultaneously:
+Instead of duplicating content across separate parallel tracks, each major topic lives on a **single canonical page** organized into 3 ascending layers of depth:
 
-1. **The Linear Traveler**: A developer reading sequentially to rebuild their mental model of Python from the ground up.
-2. **The Search / Reference Engineer**: An engineer arriving directly from a search query (e.g. searching "How does Python GIL work" or "Python list over-allocation") who needs a comprehensive, self-contained deep dive.
+- **Layer 1: Intuition & Observable Behavior**
+  - Accessible to anyone with basic Python knowledge.
+  - Explains the concept using high-level mechanical reality (e.g., "The Heap is the shared memory pool where all Python objects live").
+  - Anchored by a runnable code puzzle exposing the confusing behavior.
+- **Layer 2: Virtual Machine & Memory Mechanics**
+  - How CPython manages it: stack frames, pointer dereferencing, reference count tracking, allocator pools.
+  - Bytecode disassemblies (`LOAD_FAST`, `STORE_FAST`) and pointer diagrams.
+- **Layer 3: CPython C Internals & Source Specs**
+  - The raw C structs (`Include/object.h`, `Python/ceval.c`), exact byte layouts, bitwise flags, and OS memory interactions.
 
-To serve both without compromise, content is partitioned into two distinct tracks:
+---
+
+## How "Read More..." and Context Metadata Work
+
+### 1. Contextual Link Parameters (`?layer=1`, `?layer=2`, `?layer=3`)
+
+When a chapter links to a deep concept, the incoming link carries a metadata query parameter representing the reader's current conceptual readiness:
+
+- **From Chapter 1 (Variables / Mental Model)**:
+  `[The Heap](/foundations/process-stack-and-heap?layer=1)`
+  The reader lands on the Heap page with only **Layer 1** unlocked. They learn that the Heap is the shared dynamic storage where all Python objects live, without getting bogged down in 256KB arenas, pools, or free lists.
+- **From Garbage Collection or Memory Management**:
+  `[CPython Allocator Pools](/foundations/process-stack-and-heap?layer=2)`
+  The reader lands on the same page with **Layer 1 and Layer 2** unlocked, immediately seeing how pools and arenas manage object lifetimes.
+
+### 2. The Interactive "Read More..." Trigger
+
+At the bottom of each layer, an interactive shadcn-grade button lets the reader unlock the next depth level when they are ready:
 
 ```
-Documentation Structure
-|
-+-- Track 1: The Guided Journey (Conceptual Progression)
-|   |-- Variables: The Aliasing Mystery (Names as Pointers)
-|   |-- Mutability: The Immutable Tuple Trap (Pointer Arrays)
-|   |-- Numbers & Strings: The 28-Byte Integer (PyObject Header)
-|   |-- Functions: The Persistent Default (Stack Frames & Heap Objects)
-|   |-- Closures: Escaping the Frame (Cell Objects)
-|   |-- Classes: The Shared Attribute Trap (Type Pointers & Dictionaries)
-|   +-- Concurrency: The Two-Core Paradox (The First Glimpse of the GIL)
-|
-+-- Track 2: The Engine (Standalone Reference Deep Dives)
-    |-- The PyObject Specification (Complete Header & Type Descriptors)
-    |-- The Global Interpreter Lock (Architecture, CEval, and PEP 703)
-    |-- Memory Allocator (PyMalloc, Arenas, Pools, and Small Objects)
-    |-- Bytecode & The VM (Compiler, Stack, and ceval.c)
-    +-- Cyclic Garbage Collector (Generations, Tri-color marking)
++-----------------------------------------------------------+
+| [Layer 1 Content: The Heap as the Dynamic Object Pool]    |
++-----------------------------------------------------------+
+|  [ Read More: Unlock Virtual Machine Mechanics (Layer 2) ]|
++-----------------------------------------------------------+
 ```
 
----
+Clicking the button smoothly reveals Layer 2 inline, without losing reading position or navigating away.
 
-## How Cross-Track Integration Works
+### 3. Direct Search Visitors
 
-### Rule 1: Journey Chapters Disclose Only the Relevant Slice
+When an engineer finds the page via Google or the Starlight search bar:
 
-In Track 1 (The Journey), introduce only the slice of an internal concept that resolves the active cognitive friction:
-
-- **In "Functions"**: Introduce `PyFrameObject` and `localsplus` to explain why local variable lookup is instantaneous and parameters are passed by copying pointer values. Do not explain the entire bytecode dispatch loop or generator frame suspension yet.
-- **In "Concurrency"**: Demonstrate two CPU-bound threads taking longer than one. Introduce the GIL as a mutex protecting `ob_refcnt` from multi-threaded race conditions.
-
-### Rule 2: The Deep Dive Bridge
-
-Every time a Journey chapter reveals an internal mechanism, it concludes the section with a standardized **Deep Dive Bridge**:
-
-> **Under the Hood**: Looking for the exhaustive breakdown of the mutex implementation, `take_eval_breaker()`, and Python 3.13 free-threading? Read [The Global Interpreter Lock: Complete Architecture](/internals/gil).
-
-### Rule 3: Deep Dives Are 100% Self-Contained
-
-Track 2 reference pages must assume zero prior reading from Track 1:
-
-- Start with a clear **Executive Summary** and high-level architectural diagram.
-- Explain all prerequisites concisely in a dedicated "Context & Prerequisites" collapsible or callout.
-- Provide exhaustive, authoritative detail: exact C structs, memory offsets, bytecode instructions, and performance trade-offs.
+- The top of the page displays a discreet Depth Pill Selector: `[ Layer 1 | Layer 2 | Layer 3 | All Layers ]`.
+- Visitors can either read Layer 1 and click "Read More...", or jump straight to Layer 3 / click "All Layers" to read the entire document in one view.
+- All layers are pre-rendered in the static HTML (SSR), ensuring Pagefind and search engines index 100% of the content.
 
 ---
 
-## The Concept-to-Internals Progressive Disclosure Matrix
+## Progressive Disclosure by Topic
 
-| Python Feature   | Cognitive Friction (The Mystery)                      | Internal Revealed (The Slice)                       | Track 2 Deep Dive          |
-| :--------------- | :---------------------------------------------------- | :-------------------------------------------------- | :------------------------- |
-| **Variables**    | `b = a; b.append(1)` mutates `a`                      | Variables are 8-byte pointers; heap objects         | Memory Model               |
-| **Mutability**   | `(1, [2])` can have its list mutated                  | Fixed pointer array pointing to dynamic heap block  | PyObject & Sequences       |
-| **Primitives**   | `x = 256; y = 256` is identical; `257` is not         | Small int cache array (`small_ints[-5..256]`)       | PyObject Anatomy           |
-| **Functions**    | Default argument `def f(x, l=[])` accumulates         | `PyFunctionObject` lives on heap; `__defaults__`    | Stack Frames & Bytecode    |
-| **Closures**     | Loop variable captures late in lambda                 | `PyCellObject` holds indirect pointer across frames | Execution & Scopes         |
-| **OOP**          | Class attribute modification affects all instances    | `ob_type` pointer and instance `__dict__` lookup    | Object Model & Descriptors |
-| **Threads**      | Multi-threading CPU work is slower than single-thread | Thread safety for `ob_refcnt` requires global mutex | The GIL                    |
-| **Deallocation** | Cyclic list `a.append(a)` never frees on `del a`      | Reference counting vs Cyclic Garbage Collector      | Garbage Collector          |
+| Topic                     | Layer 1: Intuition & Behavior            | Layer 2: Virtual Machine Mechanics                | Layer 3: CPython C Internals                             |
+| :------------------------ | :--------------------------------------- | :------------------------------------------------ | :------------------------------------------------------- |
+| **Variables & Names**     | Aliasing mystery, `id()`, `is` vs `==`   | Frame `localsplus` array vs `f_globals` dict      | `PyFrameObject`, `STORE_FAST`, pointer offsets           |
+| **The Heap & Memory**     | Dynamic object pool vs call stack        | PyMalloc: Arenas (256KB), Pools (4KB), Blocks     | `ob_refcnt`, `PyObject_Malloc`, OS `brk`/`mmap`          |
+| **Data Mutability**       | Mutating a list inside a tuple           | Fixed pointer array targeting dynamic heap buffer | `PyTupleObject`, `PyListObject`, over-allocation         |
+| **Integers & Primitives** | Why integers consume 28 bytes            | Small int cache ($-5$ to $256$), immutability     | `PyLongObject`, `ob_digit`, arbitrary precision          |
+| **Functions & Defaults**  | Default mutable argument persistence     | Heap-allocated `PyFunctionObject`, `__defaults__` | `func->func_defaults`, bytecode `MAKE_FUNCTION`          |
+| **The GIL**               | Why CPU threads don't speed up execution | Mutex protecting `ob_refcnt` during execution     | `ceval.c`, `take_eval_breaker()`, PEP 703 free-threading |
+| **Garbage Collection**    | Cyclic reference memory leak             | Reference counting vs Generational GC (Gen 0-2)   | `PyGC_Head`, doubly-linked lists, tri-color marking      |
