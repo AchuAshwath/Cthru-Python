@@ -1,0 +1,68 @@
+---
+title: "Bibliography & Primary References"
+description: "Foundational literature, architectural specifications, and CPython source code references."
+---
+
+This reference bibliography compiles primary source literature, seminal engineering lectures, and source code files relevant to the study of CPython internals.
+
+---
+
+## Primary CPython Source Files
+
+The authoritative definition of CPython behavior is its open-source C codebase hosted on GitHub:
+
+| Component                        | Source File                                                                                | Description                                                                             |
+| :------------------------------- | :----------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
+| **Object Model Header**          | [`Include/object.h`](https://github.com/python/cpython/blob/main/Include/object.h)         | Definitions of `PyObject`, `PyVarObject`, type descriptors, and reference count macros. |
+| **Interpreter Evaluation Loop**  | [`Python/ceval.c`](https://github.com/python/cpython/blob/main/Python/ceval.c)             | The core virtual machine dispatch routine (`_PyEval_EvalFrameDefault`).                 |
+| **Arbitrary Precision Integers** | [`Objects/longobject.c`](https://github.com/python/cpython/blob/main/Objects/longobject.c) | Integer memory representation and the small integer cache (`[-5, 256]`).                |
+| **Dynamic Array Implementation** | [`Objects/listobject.c`](https://github.com/python/cpython/blob/main/Objects/listobject.c) | Pointer array over-allocation strategy, item indexing, and in-place resizing.           |
+| **Hash Table Implementation**    | [`Objects/dictobject.c`](https://github.com/python/cpython/blob/main/Objects/dictobject.c) | Compact dictionary memory layout (split-table and combined-table architectures).        |
+
+---
+
+## Seminal Lectures & Papers
+
+### Facts and Myths about Python Names and Values
+
+- **Author**: Ned Batchelder (PyCon 2015)
+- **Reference**: [nedbatchelder.com/text/names.html](https://nedbatchelder.com/text/names.html)
+- **Significance**: Comprehensive deconstruction of the "variable as container" model. Establishes the formal definition of name binding, pointer aliasing, and assignment semantics in Python.
+
+### A Python Interpreter Written in Python
+
+- **Authors**: Allison Kaptur, Ned Batchelder (The Architecture of Open Source Applications, Vol. 4: _500 Lines or Less_)
+- **Reference**: [aosabook.org/en/500L/a-python-interpreter-written-in-python.html](https://aosabook.org/en/500L/a-python-interpreter-written-in-python.html)
+- **Significance**: Architectural breakdown of the Python Virtual Machine by implementing an operational stack interpreter (Byterun) capable of evaluating CPython bytecode.
+
+### Python Variables Are Pointers (Not Buckets)
+
+- **Author**: Trey Hunner
+- **Reference**: [treyhunner.com/2019/04/python-variables-are-pointers/](https://treyhunner.com/2019/04/python-variables-are-pointers/)
+- **Significance**: Pedagogical breakdown of pointer mechanics in Python and the practical consequences of shared mutable state.
+
+---
+
+## Core Technical Books
+
+### Fluent Python (2nd Edition)
+
+- **Author**: Luciano Ramalho (O'Reilly Media)
+- **Key Chapter**: _Chapter 6: Object References, Mutability, and Recycling_
+- **Significance**: Thorough treatment of object identity, shallow vs. deep copies, default argument traps, and weak references.
+
+### CPython Internals: Your Guide to the Python 3 Interpreter
+
+- **Author**: Anthony Shaw (Real Python)
+- **Significance**: Step-by-step structural walkthrough of CPython compilation, code generation, memory allocator pools (`pymalloc`), and syntax grammar modifications.
+
+---
+
+## Specialized Architectural Series
+
+- **[Python's Innards](https://tenthousandmeters.com/tag/python-internals/)** by Yaniv Aknin  
+  Detailed dissection of CPython object allocation, code objects, and frame evaluation mechanics.
+- **[Python Internals](https://eli.thegreenplace.net/tag/python-internals)** by Eli Bendersky  
+  Deep architectural analysis of symbol tables, AST parsers, and compiler optimizations.
+- **[Online Python Tutor](https://pythontutor.com/)** by Prof. Philip Guo (ACM SIGCSE)  
+  Formal research on runtime state visualization and its pedagogical efficacy in computer science education.

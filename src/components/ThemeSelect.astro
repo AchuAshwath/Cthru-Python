@@ -1,0 +1,162 @@
+---
+---
+
+<div class="relative inline-flex items-center shadcn-theme-toggle">
+  <button
+    type="button"
+    class="theme-toggle-button inline-flex items-center justify-center h-8 w-8 rounded-md border border-[#1e293b] bg-[#0a0f1d]/80 hover:border-[#3776ab]/60 hover:bg-[#0f2338]/40 hover:text-zinc-100 text-zinc-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#58a6ff] cursor-pointer relative"
+    aria-label="Toggle theme"
+    title="Toggle color theme"
+  >
+    <!-- Sun Icon (Lucide Sun) - Visible in Light Mode -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="sun-icon transition-all duration-200 pointer-events-none"
+    >
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2"></path>
+      <path d="M12 20v2"></path>
+      <path d="m4.93 4.93 1.41 1.41"></path>
+      <path d="m17.66 17.66 1.41 1.41"></path>
+      <path d="M2 12h2"></path>
+      <path d="M20 12h2"></path>
+      <path d="m6.34 17.66-1.41 1.41"></path>
+      <path d="m19.07 4.93-1.41 1.41"></path>
+    </svg>
+
+    <!-- Moon Icon (Lucide Moon) - Visible in Dark Mode -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="moon-icon absolute transition-all duration-200 pointer-events-none"
+    >
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+    </svg>
+    <span class="sr-only">Toggle theme</span>
+  </button>
+</div>
+
+<style>
+  /* Dark Mode: Moon is visible, Sun is rotated & scaled out */
+  :root[data-theme="dark"] .sun-icon {
+    transform: rotate(90deg) scale(0);
+    opacity: 0;
+  }
+  :root[data-theme="dark"] .moon-icon {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+
+  /* Light Mode: Sun is visible, Moon is rotated & scaled out */
+  :root[data-theme="light"] .sun-icon {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  :root[data-theme="light"] .moon-icon {
+    transform: rotate(-90deg) scale(0);
+    opacity: 0;
+  }
+
+  /* Light Mode button adaptations */
+  :root[data-theme="light"] .theme-toggle-button {
+    border-color: #e2e8f0;
+    background-color: #ffffff;
+    color: #475569;
+  }
+  :root[data-theme="light"] .theme-toggle-button:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    border-color: #3776ab;
+  }
+</style>
+
+<script>
+  type Theme = "dark" | "light";
+  const STORAGE_KEY = "starlight-theme";
+
+  function getSystemTheme(): Theme {
+    return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+
+  function getActiveTheme(): Theme {
+    if (typeof localStorage !== "undefined") {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored === "dark" || stored === "light") {
+        return stored;
+      }
+    }
+    // Default to system preferred if no explicit manual choice is set
+    return getSystemTheme();
+  }
+
+  function applyTheme(theme: Theme, isManualToggle = false) {
+    document.documentElement.dataset.theme = theme;
+
+    if (isManualToggle) {
+      localStorage.setItem(STORAGE_KEY, theme);
+    }
+
+    // Update button title/tooltip
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    document.querySelectorAll(".theme-toggle-button").forEach((btn) => {
+      btn.setAttribute("title", `Switch to ${nextTheme} mode`);
+      btn.setAttribute("aria-label", `Switch to ${nextTheme} mode`);
+    });
+
+    // Notify Starlight internal listeners if present
+    if (typeof window !== "undefined" && (window as any).StarlightThemeProvider?.updatePickers) {
+      (window as any).StarlightThemeProvider.updatePickers(theme);
+    }
+  }
+
+  function toggleTheme() {
+    const currentTheme =
+      (document.documentElement.dataset.theme as Theme) || getActiveTheme();
+    const newTheme: Theme = currentTheme === "dark" ? "light" : "dark";
+    applyTheme(newTheme, true);
+  }
+
+  function initThemeToggle() {
+    const active = getActiveTheme();
+    applyTheme(active, false);
+
+    document.querySelectorAll(".theme-toggle-button").forEach((btn) => {
+      // Clean previous listener to prevent duplicate triggers
+      btn.replaceWith(btn.cloneNode(true));
+    });
+
+    document.querySelectorAll(".theme-toggle-button").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleTheme();
+      });
+    });
+  }
+
+  // React to OS scheme changes if user hasn't explicitly set a preference
+  window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+    if (typeof localStorage !== "undefined" && !localStorage.getItem(STORAGE_KEY)) {
+      applyTheme(getSystemTheme(), false);
+    }
+  });
+
+  // Initialize immediately and after Astro client navigations
+  initThemeToggle();
+  document.addEventListener("astro:page-load", initThemeToggle);
+  document.addEventListener("astro:after-swap", initThemeToggle);
+</script>
