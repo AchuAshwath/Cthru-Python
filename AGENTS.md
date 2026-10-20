@@ -11,6 +11,7 @@ The mission of Cthru-Python is to build true **Mechanical Empathy** for Python d
 - Bridge the gap between writing Python syntax and understanding how the computer physically executes it.
 - Demystify memory management, object pointers, stack frames, and the CPython C runtime.
 - Provide a resource that works equally well for learners who know basic Python and want to master it, as well as intermediate and advanced engineers seeking deep CPython systems knowledge.
+- **Pedagogical Standard**: Strictly follow [PEDAGOGY.md](file:///Users/ashwath/projects/Cthru-Python/PEDAGOGY.md) for progressive disclosure and dual-track content organization.
 
 ---
 
